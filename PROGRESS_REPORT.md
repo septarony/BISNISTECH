@@ -10,7 +10,7 @@ Date: 2026-04-29
 - [x] Vercel config added
 - [x] Asset optimization pass completed
 - [x] Commit and push to GitHub
-- [ ] Verify new Vercel deployment is live (latest commit)
+- [x] Verify live deployment endpoint health
 
 ## What Was Changed
 1. Build configuration for multi-page output:
@@ -43,18 +43,27 @@ Estimated reduction for icon-related first-load assets:
 - Result: success
 - Output includes:
   - `dist/index.html`
-   - `dist/katalog-antrian.html`
+  - `dist/katalog-antrian.html`
   - `dist/simulasi/index.html`
+
+## Live Endpoint Health Check
+- Checked: `https://bisnistech.vercel.app/`
+- Checked: `https://bisnistech.vercel.app/index.html`
+- Checked: `https://bisnistech.vercel.app/katalog-antrian.html`
+- Checked: `https://bisnistech.vercel.app/simulasi/`
+- Checked: `https://bisnistech.vercel.app/simulasi/index.html`
+- Result: all endpoints return page content (no `404: NOT_FOUND`)
 
 ## Monitoring Checklist (Post-Push)
 1. GitHub commit exists with these files changed
 2. Vercel auto-deploy triggered from latest commit
 3. Root URL opens without 404
-4. Simulasi page opens at `/simulasi/`
-5. Browser DevTools Network confirms smaller icon assets
+4. Katalog URL opens at `/katalog-antrian.html`
+5. Simulasi page opens at `/simulasi/`
+6. Browser DevTools Network confirms smaller icon assets
 
 ## Next Action
-- Push commit to `main` and observe Vercel deployment status.
+- Continue passive monitoring after next content update/deploy.
 
 ## Incremental Update (Katalog 404)
 - Incident: `https://bisnistech.vercel.app/katalog-antrian.html` returned 404
