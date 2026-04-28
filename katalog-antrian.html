@@ -6,166 +6,495 @@
   <title>Katalog Mesin Antrian - SEPTA</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet" />
   <style>
     :root {
-      --bg: #0b1020;
-      --card: #141c2f;
-      --line: #2b385f;
-      --text: #e6ebff;
-      --muted: #9aa7d6;
-      --accent: #52b8ff;
+      --bg: #06141d;
+      --bg-soft: #0c2332;
+      --card: #102a3b;
+      --line: rgba(255, 255, 255, 0.14);
+      --text: #eaf5ff;
+      --muted: #b7cada;
+      --accent: #4dc4ff;
+      --gold: #f7c968;
     }
 
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     body {
       margin: 0;
       font-family: "Inter", sans-serif;
-      background: radial-gradient(circle at top right, #11203c 0%, var(--bg) 40%);
       color: var(--text);
+      line-height: 1.65;
+      background:
+        radial-gradient(circle at 85% 12%, rgba(77, 196, 255, 0.2), transparent 30%),
+        radial-gradient(circle at 8% 88%, rgba(247, 201, 104, 0.14), transparent 24%),
+        var(--bg);
     }
 
     .wrap {
-      max-width: 1100px;
+      max-width: 1140px;
       margin: 0 auto;
-      padding: 36px 16px 48px;
+      padding: 30px 16px 64px;
     }
 
-    .header {
+    .top {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+      justify-content: space-between;
       margin-bottom: 20px;
     }
 
-    .header h1 {
-      margin: 0 0 8px;
-      font-size: clamp(1.3rem, 2vw, 2rem);
+    .top h1 {
+      margin: 0;
+      font-family: "Space Grotesk", sans-serif;
+      font-size: clamp(1.45rem, 3vw, 2.05rem);
+      letter-spacing: -0.4px;
     }
 
-    .header p {
-      margin: 0;
+    .top p {
+      margin: 6px 0 0;
       color: var(--muted);
       font-size: 0.95rem;
-    }
-
-    .actions {
-      margin-top: 14px;
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
+      max-width: 760px;
     }
 
     .btn {
+      display: inline-block;
       text-decoration: none;
-      color: #071020;
-      background: linear-gradient(135deg, #7dd3fc, var(--accent));
       font-weight: 700;
-      padding: 10px 14px;
+      color: #062235;
+      background: linear-gradient(135deg, #9ad8ff, var(--accent));
       border-radius: 10px;
-      font-size: 0.9rem;
+      padding: 10px 14px;
+      font-size: 0.88rem;
+      white-space: nowrap;
     }
 
-    .gallery {
+    .sequence {
+      margin: 18px 0 26px;
+      background: linear-gradient(135deg, rgba(77, 196, 255, 0.12), rgba(247, 201, 104, 0.08));
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 12px 14px;
+      color: var(--muted);
+      font-size: 0.86rem;
+    }
+
+    .catalog {
       display: grid;
       gap: 18px;
     }
 
-    .card {
-      background: var(--card);
+    .product {
+      background: linear-gradient(150deg, rgba(16, 42, 59, 0.96), rgba(12, 35, 50, 0.9));
       border: 1px solid var(--line);
-      border-radius: 14px;
+      border-radius: 16px;
       overflow: hidden;
+      box-shadow: 0 14px 40px rgba(0, 0, 0, 0.22);
     }
 
-    .card-head {
-      padding: 10px 14px;
-      border-bottom: 1px solid var(--line);
+    .product-body {
+      display: grid;
+      grid-template-columns: 330px 1fr;
+      gap: 18px;
+      align-items: stretch;
+    }
+
+    .media {
+      border-right: 1px solid var(--line);
+      background: var(--bg-soft);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 14px;
+      min-height: 240px;
+    }
+
+    .media img {
+      width: 100%;
+      max-height: 290px;
+      object-fit: contain;
+      background: #fff;
+      border-radius: 10px;
+      border: 1px solid rgba(0, 0, 0, 0.08);
+    }
+
+    .content {
+      padding: 18px 20px 16px 0;
+    }
+
+    .tag {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 0.73rem;
+      font-weight: 700;
+      letter-spacing: 0.7px;
+      text-transform: uppercase;
+      color: #062235;
+      background: linear-gradient(135deg, var(--gold), #ffe3a7);
+      margin-bottom: 8px;
+    }
+
+    .content h2 {
+      margin: 0 0 8px;
+      font-size: 1.2rem;
+      letter-spacing: -0.2px;
+    }
+
+    .content p {
+      margin: 0 0 10px;
       color: var(--muted);
+      font-size: 0.93rem;
+    }
+
+    .content ul {
+      margin: 0;
+      padding-left: 20px;
+      color: var(--muted);
+      display: grid;
+      gap: 6px;
+      font-size: 0.92rem;
+    }
+
+    .content strong { color: var(--text); }
+
+    .dual {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 10px;
+    }
+
+    .mini {
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 10px;
+      padding: 10px;
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    .mini h4 {
+      margin: 0 0 4px;
+      font-size: 0.9rem;
+      color: #9bd8ff;
+    }
+
+    .mini p {
+      margin: 0;
       font-size: 0.85rem;
     }
 
-    .card img {
-      display: block;
-      width: 100%;
-      height: auto;
-      background: #fff;
+    .promise {
+      margin-top: 8px;
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
     }
 
-    @media (max-width: 768px) {
-      .wrap {
-        padding: 24px 12px 34px;
+    .promise-item {
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 10px;
+      padding: 10px;
+      text-align: center;
+      font-size: 0.84rem;
+      color: var(--muted);
+    }
+
+    .promise-item img {
+      width: 72px;
+      height: 72px;
+      object-fit: contain;
+      display: block;
+      margin: 0 auto 8px;
+      background: #fff;
+      border-radius: 8px;
+      border: 1px solid rgba(0, 0, 0, 0.08);
+      padding: 6px;
+    }
+
+    .closing {
+      margin-top: 22px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: linear-gradient(145deg, rgba(77, 196, 255, 0.12), rgba(16, 42, 59, 0.85));
+      padding: 22px 18px;
+      text-align: center;
+    }
+
+    .closing h3 {
+      margin: 0 0 8px;
+      font-family: "Space Grotesk", sans-serif;
+      font-size: clamp(1.2rem, 2.5vw, 1.65rem);
+    }
+
+    .closing p {
+      margin: 0 0 12px;
+      color: var(--muted);
+    }
+
+    .cta {
+      display: inline-block;
+      text-decoration: none;
+      background: linear-gradient(135deg, #9ad8ff, var(--accent));
+      color: #062235;
+      font-weight: 700;
+      padding: 10px 16px;
+      border-radius: 10px;
+      font-size: 0.9rem;
+    }
+
+    @media (max-width: 920px) {
+      .product-body {
+        grid-template-columns: 1fr;
       }
 
-      .card-head {
-        font-size: 0.8rem;
+      .media {
+        border-right: none;
+        border-bottom: 1px solid var(--line);
       }
+
+      .content {
+        padding: 14px;
+      }
+
+      .promise {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .dual { grid-template-columns: 1fr; }
+      .promise { grid-template-columns: 1fr; }
     }
   </style>
 </head>
 <body>
   <main class="wrap">
-    <header class="header">
-      <h1>Katalog Mesin Antrian</h1>
-      <p>Halaman ini menampilkan file JPG lampiran katalog Anda.</p>
-      <div class="actions">
-        <a class="btn" href="index.html">Kembali ke Beranda</a>
+    <header class="top">
+      <div>
+        <h1>Katalog Sistem Antrian SEPTA</h1>
+        <p>Revisi katalog ini mengikuti urutan referensi dari folder Contoh (format JPG), dengan gaya bahasa profesional, persuasif, dan mudah dibaca di samping gambar produk.</p>
       </div>
+      <a class="btn" href="index.html">Kembali ke Beranda</a>
     </header>
 
-    <section class="gallery" aria-label="Daftar katalog antrian">
-      <article class="card">
-        <div class="card-head">Halaman 1</div>
-        <img src="Av PDF New_page-0001.jpg" alt="Katalog mesin antrian halaman 1" loading="lazy" />
+    <div class="sequence">
+      <strong>Panduan Katalog:</strong> Halaman berikut mengikuti urutan referensi dari folder Contoh (0001–0013). Setiap kartu mencakup gambar produk, nama seri, dan deskripsi persuasif yang mudah dibaca di samping visual.
+    </div>
+
+    <section class="catalog" aria-label="Urutan katalog mesin antrian">
+      <article class="product" data-page="1-2">
+        <div class="product-body">
+          <div class="media">
+            <img src="Images/Display Sederhana.png" alt="The Essentials Series WMQ-1L" loading="lazy" />
+          </div>
+          <div class="content">
+            <span class="tag">The Essentials Series • Page 1-2</span>
+            <h2>WMQ-1L</h2>
+            <p>Solusi entry-level yang ideal untuk klinik kecil, loket tunggal, dan unit layanan kompak. Fokus utama seri ini adalah implementasi cepat dan stabil dengan pendekatan plug-and-play.</p>
+            <ul>
+              <li><strong>Plug-and-play siap pakai:</strong> instalasi ringkas tanpa konfigurasi kompleks, cocok untuk operator pemula.</li>
+              <li><strong>Cocok untuk beban antrean ringan-menengah:</strong> membantu menata alur layanan agar lebih rapi sejak hari pertama operasional.</li>
+              <li><strong>Visibilitas nomor tinggi:</strong> display mudah dibaca untuk mempercepat respons pelanggan dan meningkatkan kepuasan layanan.</li>
+            </ul>
+          </div>
+        </div>
       </article>
-      <article class="card">
-        <div class="card-head">Halaman 2</div>
-        <img src="Av PDF New_page-0002.jpg" alt="Katalog mesin antrian halaman 2" loading="lazy" />
+
+      <article class="product" data-page="3-4">
+        <div class="product-body">
+          <div class="media">
+            <img src="Images/Display Sederhana 2.png" alt="Expanded Essentials WMQ-2L" loading="lazy" />
+          </div>
+          <div class="content">
+            <span class="tag">Expanded Essentials • Page 3-4</span>
+            <h2>WMQ-2L</h2>
+            <p>Paket upgrade dari Essentials untuk lingkungan multi-layanan yang membutuhkan fleksibilitas pertumbuhan loket.</p>
+            <ul>
+              <li><strong>Dirancang untuk multi-service counter:</strong> mendukung antrean lintas jenis layanan dalam satu area.</li>
+              <li><strong>Arsitektur scalable:</strong> ekspansi tombol/loket lebih mudah saat kebutuhan operasional meningkat.</li>
+              <li><strong>Tetap sederhana untuk operator:</strong> workflow familiar seperti seri dasar, namun lebih siap berkembang.</li>
+            </ul>
+          </div>
+        </div>
       </article>
-      <article class="card">
-        <div class="card-head">Halaman 3</div>
-        <img src="Av PDF New_page-0003.jpg" alt="Katalog mesin antrian halaman 3" loading="lazy" />
+
+      <article class="product" data-page="5">
+        <div class="product-body">
+          <div class="media">
+            <img src="Images/Kios K.png" alt="Kiosk Advantage Touchless Automation" loading="lazy" />
+          </div>
+          <div class="content">
+            <span class="tag">Kiosk Advantage • Page 5</span>
+            <h2>Touchless Automation</h2>
+            <p>Menggantikan pengambilan tiket manual dengan pengalaman lebih higienis melalui kios berdiri profesional berbasis sensor.</p>
+            <ul>
+              <li><strong>Touchless sensor ticketing:</strong> mengurangi kontak fisik di titik antrean.</li>
+              <li><strong>Standar layanan lebih modern:</strong> antrean terlihat lebih tertata dan premium di area front office.</li>
+              <li><strong>Cocok untuk lokasi dengan traffic tinggi:</strong> menjaga alur tetap cepat tanpa mengorbankan kenyamanan.</li>
+            </ul>
+          </div>
+        </div>
       </article>
-      <article class="card">
-        <div class="card-head">Halaman 4</div>
-        <img src="Av PDF New_page-0004.jpg" alt="Katalog mesin antrian halaman 4" loading="lazy" />
+
+      <article class="product" data-page="6-7">
+        <div class="product-body">
+          <div class="media">
+            <img src="Images/Kios k 2.png" alt="Intermediate Series A WSQ-1LU dan 2LU" loading="lazy" />
+          </div>
+          <div class="content">
+            <span class="tag">Intermediate Series A • Page 6-7</span>
+            <h2>WSQ-1LU &amp; 2LU</h2>
+            <p>Solusi otomatis yang menyeimbangkan kiosk pencetak tiket dengan display utama, untuk kontrol antrean lebih konsisten di ruang layanan.</p>
+            <ul>
+              <li><strong>Integrasi kiosk + display utama:</strong> manajemen antrean lebih terpusat dan terukur.</li>
+              <li><strong>Mendukung tombol panggil nirkabel:</strong> respons loket lebih cepat dan fleksibel.</li>
+              <li><strong>Transisi mulus dari sistem manual:</strong> cocok sebagai tahap upgrade operasional berikutnya.</li>
+            </ul>
+          </div>
+        </div>
       </article>
-      <article class="card">
-        <div class="card-head">Halaman 5</div>
-        <img src="Av PDF New_page-0005.jpg" alt="Katalog mesin antrian halaman 5" loading="lazy" />
+
+      <article class="product" data-page="8">
+        <div class="product-body">
+          <div class="media">
+            <img src="Images/Standart 7 segment LED.png" alt="Intermediate Series B WSQ-2LC dan WSQ-2LD" loading="lazy" />
+          </div>
+          <div class="content">
+            <span class="tag">Intermediate Series B • Page 8</span>
+            <h2>WSQ-2LC &amp; WSQ-2LD</h2>
+            <p>Dirancang untuk meningkatkan kejelasan di level loket melalui mini display khusus pada tiap counter layanan.</p>
+            <div class="dual">
+              <div class="mini">
+                <h4>WSQ-2LC</h4>
+                <p>Fokus pada <strong>7-segment LED</strong> untuk indikator counter yang cepat terbaca.</p>
+              </div>
+              <div class="mini">
+                <h4>WSQ-2LD</h4>
+                <p>Varian <strong>dotmatrix</strong> dengan keterbacaan lebih kaya untuk nama/nomor layanan.</p>
+              </div>
+            </div>
+          </div>
+        </div>
       </article>
-      <article class="card">
-        <div class="card-head">Halaman 6</div>
-        <img src="Av PDF New_page-0006.jpg" alt="Katalog mesin antrian halaman 6" loading="lazy" />
+
+      <article class="product" data-page="9-10">
+        <div class="product-body">
+          <div class="media">
+            <img src="Images/WSCQ Series.png" alt="The Multimedia Shift WSCQ Series" loading="lazy" />
+          </div>
+          <div class="content">
+            <span class="tag">The Multimedia Shift • Page 9-10</span>
+            <h2>WSCQ Series</h2>
+            <p>Mengubah waktu tunggu menjadi waktu edukasi: nomor antrean tampil berdampingan dengan konten informasi, promosi, atau edukasi publik.</p>
+            <ul>
+              <li><strong>TV 32 inci sebagai media utama:</strong> memperkuat komunikasi visual di ruang tunggu.</li>
+              <li><strong>Mini PC untuk pemrosesan konten:</strong> mendukung live TV, video korporat, dan digital signage.</li>
+              <li><strong>Pengalaman pengunjung lebih bernilai:</strong> antrean tetap berjalan sambil audiens menerima informasi relevan.</li>
+            </ul>
+          </div>
+        </div>
       </article>
-      <article class="card">
-        <div class="card-head">Halaman 7</div>
-        <img src="Av PDF New_page-0007.jpg" alt="Katalog mesin antrian halaman 7" loading="lazy" />
+
+      <article class="product" data-page="11">
+        <div class="product-body">
+          <div class="media">
+            <img src="Images/LED TV.png" alt="Hybrid Multimedia Configuration" loading="lazy" />
+          </div>
+          <div class="content">
+            <span class="tag">Hybrid Multimedia • Page 11</span>
+            <h2>WSCQ-CDS &amp; WSCQ-CDD</h2>
+            <p>Konfigurasi hibrida yang menggabungkan tampilan multimedia area tunggu dengan indikator loket berkontras tinggi untuk wayfinding cepat.</p>
+            <div class="dual">
+              <div class="mini">
+                <h4>WSCQ-CDS</h4>
+                <p>TV main display dipadukan dengan <strong>7-segment client display</strong>.</p>
+              </div>
+              <div class="mini">
+                <h4>WSCQ-CDD</h4>
+                <p>TV main display dipadukan dengan <strong>dotmatrix client display</strong>.</p>
+              </div>
+            </div>
+          </div>
+        </div>
       </article>
-      <article class="card">
-        <div class="card-head">Halaman 8</div>
-        <img src="Av PDF New_page-0008.jpg" alt="Katalog mesin antrian halaman 8" loading="lazy" />
+
+      <article class="product" data-page="12">
+        <div class="product-body">
+          <div class="media">
+            <img src="Images/Interactive Touchscreen.png" alt="Interactive Touchscreen Series" loading="lazy" />
+          </div>
+          <div class="content">
+            <span class="tag">Flagship Series • Page 12</span>
+            <h2>Interactive Touchscreen Series</h2>
+            <p>Solusi flagship untuk layanan mandiri, menggantikan tombol konvensional dengan navigasi layanan berbasis layar sentuh.</p>
+            <ul>
+              <li><strong>Self-service yang intuitif:</strong> pengunjung memilih kategori layanan sebelum cetak tiket.</li>
+              <li><strong>Sangat ideal untuk bank dan kantor pemerintah:</strong> mengurangi kebingungan di front desk.</li>
+              <li><strong>Citra layanan modern:</strong> menghadirkan pengalaman digital yang profesional dan efisien.</li>
+            </ul>
+          </div>
+        </div>
       </article>
-      <article class="card">
-        <div class="card-head">Halaman 9</div>
-        <img src="Av PDF New_page-0009.jpg" alt="Katalog mesin antrian halaman 9" loading="lazy" />
+
+      <article class="product" data-page="13">
+        <div class="product-body">
+          <div class="media">
+            <img src="Images/WTSQ LD.png" alt="Ultimate Specification WTSQ-LD" loading="lazy" />
+          </div>
+          <div class="content">
+            <span class="tag">Ultimate Specification • Page 13</span>
+            <h2>WTSQ-LD</h2>
+            <p>Konfigurasi paling komprehensif untuk organisasi dengan kebutuhan layanan kompleks lintas departemen.</p>
+            <ul>
+              <li><strong>Paket lengkap:</strong> kios touchscreen, TV 32 inci, mini PC, software antrean, client display, dan call terminal nirkabel.</li>
+              <li><strong>Integrasi end-to-end:</strong> dari input pengunjung hingga panduan counter berlangsung dalam satu ekosistem.</li>
+              <li><strong>Skalabilitas jangka panjang:</strong> siap untuk ekspansi loket, unit layanan, dan peningkatan trafik pengunjung.</li>
+            </ul>
+          </div>
+        </div>
       </article>
-      <article class="card">
-        <div class="card-head">Halaman 10</div>
-        <img src="Av PDF New_page-0010.jpg" alt="Katalog mesin antrian halaman 10" loading="lazy" />
+
+      <article class="product" data-page="1-13">
+        <div class="product-body">
+          <div class="media">
+            <img src="Images/assemble.png" alt="Standard Promise AV Tech" loading="lazy" />
+          </div>
+          <div class="content">
+            <span class="tag">Standard Promise • Semua Halaman</span>
+            <h2>Komitmen Layanan SEPTA</h2>
+            <p>Setiap sistem didukung dengan komitmen konektivitas, dukungan teknis, dan kemudahan pengembangan.</p>
+            <div class="promise">
+              <div class="promise-item">
+                <img src="Images/Tombol Antrian.png" alt="WiFi Router Included" loading="lazy" />
+                Dukungan konektivitas untuk integrasi perangkat lapangan.
+              </div>
+              <div class="promise-item">
+                <img src="Images/Ticket.png" alt="Warranty" loading="lazy" />
+                Garansi dan dukungan purna jual untuk operasional berkelanjutan.
+              </div>
+              <div class="promise-item">
+                <img src="Images/Tiket Sederhana.png" alt="Customization" loading="lazy" />
+                Penyesuaian tampilan antrean sesuai kebutuhan identitas instansi.
+              </div>
+              <div class="promise-item">
+                <img src="Images/Mini PC.png" alt="Expandable Architecture" loading="lazy" />
+                Arsitektur siap ekspansi untuk pertumbuhan counter dan layanan.
+              </div>
+            </div>
+          </div>
+        </div>
       </article>
-      <article class="card">
-        <div class="card-head">Halaman 11</div>
-        <img src="Av PDF New_page-0011.jpg" alt="Katalog mesin antrian halaman 11" loading="lazy" />
-      </article>
-      <article class="card">
-        <div class="card-head">Halaman 12</div>
-        <img src="Av PDF New_page-0013.jpg" alt="Katalog mesin antrian halaman 12" loading="lazy" />
-      </article>
-      <article class="card">
-        <div class="card-head">Halaman 13</div>
-        <img src="Av PDF New_page-0014.jpg" alt="Katalog mesin antrian halaman 13" loading="lazy" />
-      </article>
+    </section>
+
+    <section class="closing" aria-label="Call to action katalog">
+      <h3>Transformasi Pengalaman Pelanggan Anda</h3>
+      <p>Mulai dari solusi counter sederhana hingga jaringan touchscreen multi-departemen, kami siap bantu rancang konfigurasi terbaik untuk organisasi Anda.</p>
+      <a class="cta" href="#" onclick="window.open('https://wa.me/6282235352270','_blank','noopener'); return false;">Konsultasi dan Penawaran Kustom</a>
     </section>
   </main>
 </body>

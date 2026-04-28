@@ -80,10 +80,10 @@ if (form && formSuccess) {
     const message = messageEl.value.trim();
 
     const serviceMap = {
-      antrian:  'Mesin Antrian Digital',
-      security: 'Security System (Autogate/Smartlock/Parkir)',
-      ppob:     'PPOB / Pembayaran',
-      lainnya:  'Lainnya'
+      'mesin-antrian': 'Mesin Antrian',
+      security: 'Security',
+      ppob: 'PPOB',
+      tentang: 'Tentang'
     };
     const serviceLabel = serviceMap[service] || 'Umum';
 
