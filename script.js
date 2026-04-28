@@ -1,25 +1,26 @@
 // ===== NAVBAR SCROLL =====
 const navbar = document.getElementById('navbar');
-window.addEventListener('scroll', () => {
-  navbar.classList.toggle('scrolled', window.scrollY > 30);
-});
 
 // ===== HAMBURGER MENU =====
 const hamburger = document.getElementById('hamburger');
 const navLinks  = document.getElementById('navLinks');
 
-hamburger.addEventListener('click', () => {
-  hamburger.classList.toggle('open');
-  navLinks.classList.toggle('open');
-});
+if (hamburger && navLinks) {
+  hamburger.addEventListener('click', () => {
+    hamburger.classList.toggle('open');
+    navLinks.classList.toggle('open');
+  });
+}
 
 // Close menu when a link is clicked
-navLinks.querySelectorAll('a').forEach(link => {
-  link.addEventListener('click', () => {
-    hamburger.classList.remove('open');
-    navLinks.classList.remove('open');
+if (navLinks && hamburger) {
+  navLinks.querySelectorAll('a').forEach(link => {
+    link.addEventListener('click', () => {
+      hamburger.classList.remove('open');
+      navLinks.classList.remove('open');
+    });
   });
-});
+}
 
 // ===== SCROLL REVEAL =====
 const revealObserver = new IntersectionObserver((entries) => {
@@ -38,56 +39,64 @@ document.querySelectorAll('.card, .product-card, .ppob-item, .acard, .name-card,
 });
 
 // ===== PRODUCT TABS =====
-const tabBtns = document.querySelectorAll('.tab-btn[data-tab]');
-const productCards = document.querySelectorAll('.product-card[data-category]');
+const tabBtns = document.querySelectorAll('.tab-btn');
+const productCards = document.querySelectorAll('.product-card');
 
-if (tabBtns.length && productCards.length) {
-  tabBtns.forEach(btn => {
-    btn.addEventListener('click', () => {
-      tabBtns.forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
+tabBtns.forEach(btn => {
+  btn.addEventListener('click', () => {
+    tabBtns.forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
 
-      const target = btn.dataset.tab;
-      productCards.forEach(card => {
-        if (card.dataset.category === target) {
-          card.classList.remove('hidden');
-        } else {
-          card.classList.add('hidden');
-        }
-      });
+    const target = btn.dataset.tab;
+    if (!target) return;
+
+    productCards.forEach(card => {
+      if (card.dataset.category === target) {
+        card.classList.remove('hidden');
+      } else {
+        card.classList.add('hidden');
+      }
     });
   });
-}
+});
 
 // ===== CONTACT FORM → WHATSAPP =====
 const form        = document.getElementById('contactForm');
 const formSuccess = document.getElementById('formSuccess');
 
-form.addEventListener('submit', (e) => {
-  e.preventDefault();
+if (form && formSuccess) {
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
 
-  const name    = document.getElementById('name').value.trim();
-  const phone   = document.getElementById('phone').value.trim();
-  const service = document.getElementById('service').value;
-  const message = document.getElementById('message').value.trim();
+    const nameEl = document.getElementById('name');
+    const phoneEl = document.getElementById('phone');
+    const serviceEl = document.getElementById('service');
+    const messageEl = document.getElementById('message');
+    if (!nameEl || !phoneEl || !serviceEl || !messageEl) return;
 
-  const serviceMap = {
-    antrian:  'Mesin Antrian Digital',
-    security: 'Security System (Autogate/Smartlock/Parkir)',
-    ppob:     'PPOB / Pembayaran',
-    lainnya:  'Lainnya'
-  };
-  const serviceLabel = serviceMap[service] || 'Umum';
+    const name    = nameEl.value.trim();
+    const phone   = phoneEl.value.trim();
+    const service = serviceEl.value;
+    const message = messageEl.value.trim();
 
-  const text = `Halo SEPTA \ud83d\udc4b\n\nSaya *${name}*\nNo. WA/HP: ${phone}\nLayanan: ${serviceLabel}\n\nPesan:\n${message || '-'}`;
-  const waUrl = `https://wa.me/6282235352270?text=${encodeURIComponent(text)}`;
+    const serviceMap = {
+      antrian:  'Mesin Antrian Digital',
+      security: 'Security System (Autogate/Smartlock/Parkir)',
+      ppob:     'PPOB / Pembayaran',
+      lainnya:  'Lainnya'
+    };
+    const serviceLabel = serviceMap[service] || 'Umum';
 
-  window.open(waUrl, '_blank', 'noopener,noreferrer');
+    const text = `Halo SEPTA \ud83d\udc4b\n\nSaya *${name}*\nNo. WA/HP: ${phone}\nLayanan: ${serviceLabel}\n\nPesan:\n${message || '-'}`;
+    const waUrl = `https://wa.me/6282235352270?text=${encodeURIComponent(text)}`;
 
-  formSuccess.classList.remove('hidden');
-  form.reset();
-  setTimeout(() => formSuccess.classList.add('hidden'), 5000);
-});
+    window.open(waUrl, '_blank', 'noopener,noreferrer');
+
+    formSuccess.classList.remove('hidden');
+    form.reset();
+    setTimeout(() => formSuccess.classList.add('hidden'), 5000);
+  });
+}
 
 // ===== SMOOTH ACTIVE NAV LINK HIGHLIGHT =====
 const sections   = document.querySelectorAll('section[id]');
@@ -98,8 +107,7 @@ const sectionObserver = new IntersectionObserver((entries) => {
     if (entry.isIntersecting) {
       const id = entry.target.getAttribute('id');
       navAnchors.forEach(a => {
-        a.style.color = a.getAttribute('href') === `#${id}`
-          ? 'var(--text-primary)' : '';
+        a.classList.toggle('active', a.getAttribute('href') === `#${id}`);
       });
     }
   });
@@ -150,6 +158,7 @@ window.addEventListener('load', () => {
 // ===== BACK TO TOP =====
 const btnTop = document.getElementById('btnTop');
 window.addEventListener('scroll', () => {
+  if (navbar) navbar.classList.toggle('scrolled', window.scrollY > 30);
   if (btnTop) btnTop.classList.toggle('visible', window.scrollY > 400);
 }, { passive: true });
 if (btnTop) {

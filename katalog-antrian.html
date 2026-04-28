@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Katalog Mesin Antrian - SEPTA</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0b1020;
+      --card: #141c2f;
+      --line: #2b385f;
+      --text: #e6ebff;
+      --muted: #9aa7d6;
+      --accent: #52b8ff;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Inter", sans-serif;
+      background: radial-gradient(circle at top right, #11203c 0%, var(--bg) 40%);
+      color: var(--text);
+    }
+
+    .wrap {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 36px 16px 48px;
+    }
+
+    .header {
+      margin-bottom: 20px;
+    }
+
+    .header h1 {
+      margin: 0 0 8px;
+      font-size: clamp(1.3rem, 2vw, 2rem);
+    }
+
+    .header p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .actions {
+      margin-top: 14px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      text-decoration: none;
+      color: #071020;
+      background: linear-gradient(135deg, #7dd3fc, var(--accent));
+      font-weight: 700;
+      padding: 10px 14px;
+      border-radius: 10px;
+      font-size: 0.9rem;
+    }
+
+    .gallery {
+      display: grid;
+      gap: 18px;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      overflow: hidden;
+    }
+
+    .card-head {
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 0.85rem;
+    }
+
+    .card img {
+      display: block;
+      width: 100%;
+      height: auto;
+      background: #fff;
+    }
+
+    @media (max-width: 768px) {
+      .wrap {
+        padding: 24px 12px 34px;
+      }
+
+      .card-head {
+        font-size: 0.8rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <header class="header">
+      <h1>Katalog Mesin Antrian</h1>
+      <p>Halaman ini menampilkan file JPG lampiran katalog Anda.</p>
+      <div class="actions">
+        <a class="btn" href="index.html">Kembali ke Beranda</a>
+      </div>
+    </header>
+
+    <section class="gallery" aria-label="Daftar katalog antrian">
+      <article class="card">
+        <div class="card-head">Halaman 1</div>
+        <img src="Av PDF New_page-0001.jpg" alt="Katalog mesin antrian halaman 1" loading="lazy" />
+      </article>
+      <article class="card">
+        <div class="card-head">Halaman 2</div>
+        <img src="Av PDF New_page-0002.jpg" alt="Katalog mesin antrian halaman 2" loading="lazy" />
+      </article>
+      <article class="card">
+        <div class="card-head">Halaman 3</div>
+        <img src="Av PDF New_page-0003.jpg" alt="Katalog mesin antrian halaman 3" loading="lazy" />
+      </article>
+      <article class="card">
+        <div class="card-head">Halaman 4</div>
+        <img src="Av PDF New_page-0004.jpg" alt="Katalog mesin antrian halaman 4" loading="lazy" />
+      </article>
+      <article class="card">
+        <div class="card-head">Halaman 5</div>
+        <img src="Av PDF New_page-0005.jpg" alt="Katalog mesin antrian halaman 5" loading="lazy" />
+      </article>
+      <article class="card">
+        <div class="card-head">Halaman 6</div>
+        <img src="Av PDF New_page-0006.jpg" alt="Katalog mesin antrian halaman 6" loading="lazy" />
+      </article>
+      <article class="card">
+        <div class="card-head">Halaman 7</div>
+        <img src="Av PDF New_page-0007.jpg" alt="Katalog mesin antrian halaman 7" loading="lazy" />
+      </article>
+      <article class="card">
+        <div class="card-head">Halaman 8</div>
+        <img src="Av PDF New_page-0008.jpg" alt="Katalog mesin antrian halaman 8" loading="lazy" />
+      </article>
+      <article class="card">
+        <div class="card-head">Halaman 9</div>
+        <img src="Av PDF New_page-0009.jpg" alt="Katalog mesin antrian halaman 9" loading="lazy" />
+      </article>
+      <article class="card">
+        <div class="card-head">Halaman 10</div>
+        <img src="Av PDF New_page-0010.jpg" alt="Katalog mesin antrian halaman 10" loading="lazy" />
+      </article>
+      <article class="card">
+        <div class="card-head">Halaman 11</div>
+        <img src="Av PDF New_page-0011.jpg" alt="Katalog mesin antrian halaman 11" loading="lazy" />
+      </article>
+      <article class="card">
+        <div class="card-head">Halaman 12</div>
+        <img src="Av PDF New_page-0013.jpg" alt="Katalog mesin antrian halaman 12" loading="lazy" />
+      </article>
+      <article class="card">
+        <div class="card-head">Halaman 13</div>
+        <img src="Av PDF New_page-0014.jpg" alt="Katalog mesin antrian halaman 13" loading="lazy" />
+      </article>
+    </section>
+  </main>
+</body>
+</html>
