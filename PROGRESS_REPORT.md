@@ -5,15 +5,16 @@ Date: 2026-04-29
 ## Current Status
 - [x] Root 404 on Vercel diagnosed
 - [x] Vite build fixed to output root page and simulasi page
+- [x] Vite build fixed to output katalog page (`/katalog-antrian.html`)
 - [x] Production link cleanup (removed localhost URL)
 - [x] Vercel config added
 - [x] Asset optimization pass completed
-- [ ] Commit and push to GitHub
-- [ ] Verify new Vercel deployment is live
+- [x] Commit and push to GitHub
+- [ ] Verify new Vercel deployment is live (latest commit)
 
 ## What Was Changed
 1. Build configuration for multi-page output:
-   - Added root entry (`index.html`) and `simulasi/index.html`
+   - Added root entry (`index.html`), katalog (`katalog-antrian.html`), and `simulasi/index.html`
 2. Deployment configuration:
    - Added `vercel.json` with build and output settings
 3. URL fix:
@@ -42,6 +43,7 @@ Estimated reduction for icon-related first-load assets:
 - Result: success
 - Output includes:
   - `dist/index.html`
+   - `dist/katalog-antrian.html`
   - `dist/simulasi/index.html`
 
 ## Monitoring Checklist (Post-Push)
@@ -53,3 +55,9 @@ Estimated reduction for icon-related first-load assets:
 
 ## Next Action
 - Push commit to `main` and observe Vercel deployment status.
+
+## Incremental Update (Katalog 404)
+- Incident: `https://bisnistech.vercel.app/katalog-antrian.html` returned 404
+- Root cause: `katalog-antrian.html` was not included in Vite `rollupOptions.input`
+- Fix: add `katalog: resolve(__dirname, 'katalog-antrian.html')` in build input
+- Validation: local build now outputs `dist/katalog-antrian.html`

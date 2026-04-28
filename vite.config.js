@@ -19,6 +19,7 @@ export default defineConfig({
     rollupOptions: {
       input: {
         main: resolve(__dirname, 'index.html'),
+        katalog: resolve(__dirname, 'katalog-antrian.html'),
         simulasi: resolve(__dirname, 'simulasi/index.html'),
       },
       output: {
