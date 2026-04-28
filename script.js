@@ -70,10 +70,10 @@ form.addEventListener('submit', (e) => {
   const message = document.getElementById('message').value.trim();
 
   const serviceMap = {
-    elektronik: 'Elektronik & Gadget',
-    keamanan:   'Sistem Keamanan',
-    ppob:       'PPOB / Pembayaran',
-    lainnya:    'Lainnya'
+    antrian:  'Mesin Antrian Digital',
+    security: 'Security System (Autogate/Smartlock/Parkir)',
+    ppob:     'PPOB / Pembayaran',
+    lainnya:  'Lainnya'
   };
   const serviceLabel = serviceMap[service] || 'Umum';
 
