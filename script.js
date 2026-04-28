@@ -38,24 +38,26 @@ document.querySelectorAll('.card, .product-card, .ppob-item, .acard, .name-card,
 });
 
 // ===== PRODUCT TABS =====
-const tabBtns = document.querySelectorAll('.tab-btn');
-const productCards = document.querySelectorAll('.product-card');
+const tabBtns = document.querySelectorAll('.tab-btn[data-tab]');
+const productCards = document.querySelectorAll('.product-card[data-category]');
 
-tabBtns.forEach(btn => {
-  btn.addEventListener('click', () => {
-    tabBtns.forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
+if (tabBtns.length && productCards.length) {
+  tabBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      tabBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
 
-    const target = btn.dataset.tab;
-    productCards.forEach(card => {
-      if (card.dataset.category === target) {
-        card.classList.remove('hidden');
-      } else {
-        card.classList.add('hidden');
-      }
+      const target = btn.dataset.tab;
+      productCards.forEach(card => {
+        if (card.dataset.category === target) {
+          card.classList.remove('hidden');
+        } else {
+          card.classList.add('hidden');
+        }
+      });
     });
   });
-});
+}
 
 // ===== CONTACT FORM → WHATSAPP =====
 const form        = document.getElementById('contactForm');
