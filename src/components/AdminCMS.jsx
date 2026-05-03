@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
-import { supabase } from '../supabaseClient'
+import { supabase, isSupabaseConfigured, missingSupabaseVars } from '../supabaseClient'
 
 // ─── Konstanta ────────────────────────────────────────────────────────────────
 const CATEGORIES = ['Mesin Antrian', 'Security System', 'PPOB', 'Tips Umum']
@@ -14,6 +14,11 @@ export default function AdminCMS() {
 
   // Cek session saat mount
   useEffect(() => {
+    if (!isSupabaseConfigured) {
+      setLoading(false)
+      return
+    }
+
     supabase.auth.getSession().then(({ data }) => {
       setSession(data.session)
       setLoading(false)
@@ -26,21 +31,30 @@ export default function AdminCMS() {
   }, [])
 
   if (loading) return <LoadingScreen />
+  if (!isSupabaseConfigured) return <ConfigErrorPage missingVars={missingSupabaseVars} />
+  if (!ADMIN_EMAIL) return <ConfigErrorPage missingVars={['VITE_ADMIN_EMAIL']} />
   if (!session) return <LoginPage />
-  if (!ADMIN_EMAIL) return <ConfigErrorPage />
   if (session.user?.email?.toLowerCase() !== ADMIN_EMAIL) {
     return <UnauthorizedPage email={session.user?.email || '-'} />
   }
   return <Dashboard session={session} />
 }
 
-function ConfigErrorPage() {
+function ConfigErrorPage({ missingVars = [] }) {
   return (
     <div className="min-h-screen bg-gray-950 flex items-center justify-center px-4">
       <div className="w-full max-w-md bg-gray-900 border border-amber-800 rounded-2xl p-6">
         <h2 className="text-amber-300 font-semibold mb-2">Konfigurasi belum lengkap</h2>
         <p className="text-gray-300 text-sm leading-relaxed">
-          Tambahkan <span className="font-mono">VITE_ADMIN_EMAIL</span> di file <span className="font-mono">.env</span> agar hanya email admin tertentu yang bisa mengakses CMS.
+          Tambahkan variabel berikut di file <span className="font-mono">.env</span>:
+        </p>
+        <ul className="mt-3 space-y-1 text-sm text-amber-200">
+          {missingVars.map(name => (
+            <li key={name} className="font-mono">{name}</li>
+          ))}
+        </ul>
+        <p className="text-gray-400 text-xs leading-relaxed mt-3">
+          Setelah deploy ke Vercel, pastikan semua variabel yang sama juga diisi pada Environment Variables project.
         </p>
       </div>
     </div>

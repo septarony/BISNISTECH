@@ -5,8 +5,17 @@ import { createClient } from '@supabase/supabase-js'
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL
 const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY
 
-if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
-  throw new Error('VITE_SUPABASE_URL dan VITE_SUPABASE_ANON_KEY harus diisi di file .env')
+export const missingSupabaseVars = [
+  !SUPABASE_URL && 'VITE_SUPABASE_URL',
+  !SUPABASE_ANON_KEY && 'VITE_SUPABASE_ANON_KEY',
+].filter(Boolean)
+
+export const isSupabaseConfigured = missingSupabaseVars.length === 0
+
+if (!isSupabaseConfigured) {
+  console.error(
+    `Konfigurasi Supabase belum lengkap. Variabel yang belum diisi: ${missingSupabaseVars.join(', ')}`
+  )
 }
 
-export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+export const supabase = isSupabaseConfigured ? createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null
