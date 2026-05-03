@@ -19,13 +19,19 @@ CREATE INDEX IF NOT EXISTS articles_category_idx ON public.articles (category);
 -- 3. Aktifkan Row Level Security (RLS)
 ALTER TABLE public.articles ENABLE ROW LEVEL SECURITY;
 
--- 4. Policy: semua orang bisa membaca (untuk halaman publik /edukasi)
+-- 4. Reset policy agar skrip aman dijalankan berulang kali
+DROP POLICY IF EXISTS "Public read access" ON public.articles;
+DROP POLICY IF EXISTS "Authenticated insert" ON public.articles;
+DROP POLICY IF EXISTS "Authenticated update" ON public.articles;
+DROP POLICY IF EXISTS "Authenticated delete" ON public.articles;
+
+-- 5. Policy: semua orang bisa membaca (untuk halaman publik /edukasi)
 CREATE POLICY "Public read access"
   ON public.articles
   FOR SELECT
   USING (true);
 
--- 5. Policy: hanya user yang sudah login (authenticated) bisa insert/update/delete
+-- 6. Policy: user login (authenticated) bisa insert/update/delete
 CREATE POLICY "Authenticated insert"
   ON public.articles
   FOR INSERT
@@ -44,6 +50,12 @@ CREATE POLICY "Authenticated delete"
   FOR DELETE
   TO authenticated
   USING (true);
+
+-- 7. Grant privilege tabel + sequence
+GRANT USAGE ON SCHEMA public TO anon, authenticated;
+GRANT SELECT ON public.articles TO anon;
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.articles TO authenticated;
+GRANT USAGE, SELECT ON SEQUENCE public.articles_id_seq TO authenticated;
 
 -- ============================================================
 -- Langkah selanjutnya:
