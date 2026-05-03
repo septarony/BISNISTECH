@@ -270,30 +270,33 @@ function Dashboard({ session }) {
       image_url: form.image_url.trim() || null,
     }
 
-    let data
+    let rows
     let error
     if (editId) {
-      ;({ data, error } = await supabase
+      ;({ data: rows, error } = await supabase
         .from('articles')
         .update(payload)
         .eq('id', editId)
-        .select('id, title, content, category, image_url, created_at')
-        .single())
+        .select('id, title, content, category, image_url, created_at'))
     } else {
-      ;({ data, error } = await supabase
+      ;({ data: rows, error } = await supabase
         .from('articles')
         .insert(payload)
-        .select('id, title, content, category, image_url, created_at')
-        .single())
+        .select('id, title, content, category, image_url, created_at'))
     }
 
     setSaving(false)
     if (error) return showToast('error', error.message)
 
+    const savedArticle = Array.isArray(rows) ? rows[0] : null
+    if (!savedArticle) {
+      return showToast('error', 'Data artikel tidak ditemukan saat menyimpan. Silakan refresh halaman.')
+    }
+
     if (editId) {
-      setArticles(current => current.map(article => article.id === editId ? data : article))
+      setArticles(current => current.map(article => article.id === editId ? savedArticle : article))
     } else {
-      setArticles(current => [data, ...current])
+      setArticles(current => [savedArticle, ...current])
     }
 
     showToast('success', editId ? 'Artikel berhasil diperbarui.' : 'Artikel berhasil ditambahkan.')
@@ -305,16 +308,17 @@ function Dashboard({ session }) {
   // ── Delete ─────────────────────────────────────────────────────────────────
   async function handleDelete() {
     const currentDeleteId = deleteId
-    const { data, error } = await supabase
+    const { data: deletedRows, error } = await supabase
       .from('articles')
       .delete()
       .eq('id', currentDeleteId)
       .select('id')
-      .maybeSingle()
 
     setDeleteId(null)
     if (error) return showToast('error', error.message)
-    if (!data) return showToast('error', 'Artikel gagal dihapus atau sudah tidak tersedia.')
+    if (!Array.isArray(deletedRows) || deletedRows.length === 0) {
+      return showToast('error', 'Artikel gagal dihapus atau sudah tidak tersedia.')
+    }
 
     setArticles(current => current.filter(article => article.id !== currentDeleteId))
     showToast('success', 'Artikel berhasil dihapus.')
