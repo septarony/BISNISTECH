@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+
+# Larang akses ke folder internal yang tidak perlu diindeks
+Disallow: /node_modules/
+Disallow: /dist/
+Disallow: /.git/
+
+# Sitemap
+Sitemap: https://bisnistech.vercel.app/sitemap.xml

@@ -21,6 +21,7 @@ export default defineConfig({
         main: resolve(__dirname, 'index.html'),
         katalog: resolve(__dirname, 'katalog-antrian.html'),
         simulasi: resolve(__dirname, 'simulasi/index.html'),
+        edukasi: resolve(__dirname, 'edukasi/index.html'),
       },
       output: {
         manualChunks: {

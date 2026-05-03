@@ -1,5 +1,16 @@
 {
   "framework": "vite",
   "buildCommand": "npm run build",
-  "outputDirectory": "dist"
+  "outputDirectory": "dist",
+  "redirects": [
+    { "source": "/layanan/mesin-antrian", "destination": "/#mesin-antrian", "permanent": true },
+    { "source": "/layanan/security",       "destination": "/#security",       "permanent": true },
+    { "source": "/layanan/ppob",           "destination": "/#ppob",           "permanent": true },
+    { "source": "/layanan/kontak",         "destination": "/#kontak",         "permanent": true },
+    { "source": "/katalog-antrian.html",   "destination": "/katalog/mesin-antrian", "permanent": true }
+  ],
+  "rewrites": [
+    { "source": "/katalog/mesin-antrian", "destination": "/katalog-antrian.html" },
+    { "source": "/edukasi",              "destination": "/edukasi/index.html" }
+  ]
 }

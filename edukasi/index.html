@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Edukasi & Tips Teknologi – SEPTA</title>
+  <meta name="description" content="Artikel edukasi seputar mesin antrian digital, security system (autogate, smartlock, palang parkir), dan PPOB dari tim SEPTA. Panduan praktis untuk bisnis Anda." />
+  <meta name="robots" content="index, follow" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Edukasi & Tips Teknologi – SEPTA" />
+  <meta property="og:description" content="Artikel dan panduan praktis seputar mesin antrian, security system, dan PPOB dari SEPTA." />
+  <meta property="og:url" content="https://bisnistech.vercel.app/edukasi" />
+  <meta property="og:image" content="https://bisnistech.vercel.app/logo-256.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Edukasi & Tips Teknologi – SEPTA" />
+  <meta name="twitter:description" content="Artikel dan panduan praktis seputar mesin antrian, security system, dan PPOB dari SEPTA." />
+  <link rel="sitemap" type="application/xml" href="/sitemap.xml" />
+  <link rel="icon" type="image/png" href="/favicon-64.png" />
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+
+  <!-- JSON-LD: BreadcrumbList -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "Beranda", "item": "https://bisnistech.vercel.app/" },
+      { "@type": "ListItem", "position": 2, "name": "Edukasi", "item": "https://bisnistech.vercel.app/edukasi" }
+    ]
+  }
+  </script>
+
+  <!-- JSON-LD: Blog -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Blog",
+    "name": "Edukasi SEPTA",
+    "url": "https://bisnistech.vercel.app/edukasi",
+    "description": "Artikel dan panduan praktis seputar mesin antrian digital, security system, dan PPOB.",
+    "publisher": {
+      "@type": "Organization",
+      "name": "SEPTA",
+      "logo": { "@type": "ImageObject", "url": "https://bisnistech.vercel.app/logo-256.png" }
+    },
+    "blogPost": [
+      {
+        "@type": "BlogPosting",
+        "headline": "5 Alasan Klinik Anda Butuh Mesin Antrian Digital",
+        "datePublished": "2026-04-10",
+        "author": { "@type": "Organization", "name": "Tim SEPTA" }
+      },
+      {
+        "@type": "BlogPosting",
+        "headline": "Perbedaan Autogate, Smartlock, dan Palang Parkir",
+        "datePublished": "2026-04-18",
+        "author": { "@type": "Organization", "name": "Tim SEPTA" }
+      },
+      {
+        "@type": "BlogPosting",
+        "headline": "Cara Mulai Bisnis PPOB dari Nol",
+        "datePublished": "2026-04-25",
+        "author": { "@type": "Organization", "name": "Tim SEPTA" }
+      }
+    ]
+  }
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/style.css" />
+  <style>
+    /* ===== EDUKASI PAGE STYLES ===== */
+    .edu-hero {
+      padding: 120px 0 64px;
+      text-align: center;
+      background: radial-gradient(ellipse at 50% 0%, rgba(99,102,241,0.15) 0%, transparent 65%);
+      border-bottom: 1px solid var(--border);
+    }
+    .edu-hero .section-tag { margin-bottom: 16px; }
+    .edu-hero h1 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(2rem, 5vw, 3rem);
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 16px;
+    }
+    .edu-hero p {
+      font-size: 1.125rem;
+      color: var(--text-secondary);
+      max-width: 560px;
+      margin: 0 auto 32px;
+    }
+
+    /* Filter tabs */
+    .edu-filters {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
+      padding: 40px 0 12px;
+    }
+    .edu-filter-btn {
+      padding: 8px 20px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: var(--bg-card);
+      color: var(--text-secondary);
+      font-size: 0.875rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    .edu-filter-btn:hover,
+    .edu-filter-btn.active {
+      background: var(--purple);
+      color: #fff;
+      border-color: var(--purple);
+    }
+
+    /* Grid artikel */
+    .edu-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 24px;
+      padding: 32px 0 64px;
+    }
+
+    /* Artikel card */
+    .article-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transition: var(--transition);
+    }
+    .article-card:hover {
+      border-color: var(--border-glow);
+      box-shadow: var(--shadow-glow);
+      transform: translateY(-4px);
+    }
+    .article-thumb {
+      width: 100%;
+      aspect-ratio: 16/9;
+      object-fit: cover;
+      background: var(--bg-secondary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 3.5rem;
+    }
+    .article-body {
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+    }
+    .article-meta {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+    .article-tag {
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      padding: 3px 10px;
+      border-radius: 999px;
+    }
+    .tag-antrian { background: rgba(99,102,241,.18); color: var(--purple-lt); }
+    .tag-security { background: rgba(6,182,212,.18); color: var(--cyan); }
+    .tag-ppob { background: rgba(245,166,35,.18); color: var(--gold); }
+    .tag-umum { background: rgba(255,255,255,.08); color: var(--text-secondary); }
+
+    .article-date {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+    .article-body h2 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.125rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 10px;
+      line-height: 1.4;
+    }
+    .article-body p {
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      line-height: 1.65;
+      flex: 1;
+      margin-bottom: 20px;
+    }
+    .article-read-more {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--purple-lt);
+      text-decoration: none;
+      transition: var(--transition);
+    }
+    .article-read-more:hover { color: #fff; gap: 10px; }
+
+    /* Featured article */
+    .article-card.featured {
+      grid-column: 1 / -1;
+      flex-direction: row;
+    }
+    .article-card.featured .article-thumb {
+      min-width: 340px;
+      aspect-ratio: auto;
+      font-size: 5rem;
+    }
+    @media (max-width: 700px) {
+      .article-card.featured { flex-direction: column; }
+      .article-card.featured .article-thumb { min-width: unset; aspect-ratio: 16/9; }
+    }
+
+    /* Newsletter CTA */
+    .edu-cta {
+      background: linear-gradient(135deg, rgba(99,102,241,.15), rgba(6,182,212,.1));
+      border: 1px solid var(--border-glow);
+      border-radius: var(--radius-lg);
+      padding: 48px 40px;
+      text-align: center;
+      margin-bottom: 64px;
+    }
+    .edu-cta h3 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 10px;
+    }
+    .edu-cta p { color: var(--text-secondary); margin-bottom: 24px; }
+    .edu-cta-form {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .edu-cta-form input {
+      padding: 12px 20px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: var(--bg-card);
+      color: var(--text-primary);
+      font-size: 0.9rem;
+      width: 280px;
+      outline: none;
+      transition: var(--transition);
+    }
+    .edu-cta-form input:focus { border-color: var(--purple); }
+    .edu-cta-form button {
+      padding: 12px 28px;
+      border-radius: 999px;
+      border: none;
+      background: var(--purple);
+      color: #fff;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    .edu-cta-form button:hover { background: var(--purple-lt); }
+
+    /* hidden card via filter */
+    .article-card.hidden { display: none; }
+  </style>
+</head>
+<body>
+
+  <!-- ===== NAVBAR ===== -->
+  <nav class="navbar" id="navbar">
+    <div class="container nav-inner">
+      <a href="/" class="logo">
+        <img src="/logo-256.png" alt="SEPTA Logo" class="logo-icon" />
+        <span>SEPTA</span>
+      </a>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="/#layanan">Layanan</a></li>
+        <li><a href="/#antrian">Mesin Antrian</a></li>
+        <li><a href="/#security">Security</a></li>
+        <li><a href="/#ppob">PPOB</a></li>
+        <li><a href="/edukasi" class="active">Edukasi</a></li>
+        <li><a href="/#kontak" class="btn-nav">Hubungi Kami</a></li>
+      </ul>
+      <button class="hamburger" id="hamburger" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- ===== HERO ===== -->
+  <header class="edu-hero">
+    <div class="container">
+      <span class="section-tag">Artikel & Panduan</span>
+      <h1>Edukasi <span class="gradient-text">Teknologi</span></h1>
+      <p>Tips, panduan, dan wawasan seputar mesin antrian, security system, dan PPOB — langsung dari tim SEPTA.</p>
+    </div>
+  </header>
+
+  <!-- ===== MAIN CONTENT ===== -->
+  <main class="container">
+
+    <!-- Filter Kategori -->
+    <div class="edu-filters">
+      <button class="edu-filter-btn active" data-filter="all">Semua</button>
+      <button class="edu-filter-btn" data-filter="antrian">Mesin Antrian</button>
+      <button class="edu-filter-btn" data-filter="security">Security System</button>
+      <button class="edu-filter-btn" data-filter="ppob">PPOB</button>
+      <button class="edu-filter-btn" data-filter="umum">Tips Umum</button>
+    </div>
+
+    <!-- Grid Artikel -->
+    <div class="edu-grid" id="articleGrid">
+
+      <!-- Artikel 1 — Featured -->
+      <article class="article-card featured reveal" data-category="antrian">
+        <div class="article-thumb" aria-hidden="true">🖨️</div>
+        <div class="article-body">
+          <div class="article-meta">
+            <span class="article-tag tag-antrian">Mesin Antrian</span>
+            <span class="article-date">10 April 2026</span>
+          </div>
+          <h2>5 Alasan Klinik & Rumah Sakit Butuh Mesin Antrian Digital Sekarang</h2>
+          <p>Antrean panjang bukan hanya membuat pasien tidak nyaman — ia juga menggerus kepercayaan pada fasilitas kesehatan Anda. Mesin antrian digital hadir bukan sekadar tren, melainkan solusi nyata: kurangi kerumunan, pantau statistik pelayanan real-time, dan tingkatkan kepuasan pasien hingga 40%.</p>
+          <a href="#artikel-1" class="article-read-more">Baca Selengkapnya →</a>
+        </div>
+      </article>
+
+      <!-- Artikel 2 -->
+      <article class="article-card reveal" data-category="antrian">
+        <div class="article-thumb" aria-hidden="true">📟</div>
+        <div class="article-body">
+          <div class="article-meta">
+            <span class="article-tag tag-antrian">Mesin Antrian</span>
+            <span class="article-date">15 April 2026</span>
+          </div>
+          <h2>Mengenal Komponen Mesin Antrian: Token Dispenser, Display, dan Software</h2>
+          <p>Sebuah sistem antrian terdiri dari tiga komponen utama yang bekerja bersama. Pelajari fungsi masing-masing dan cara memilih spesifikasi yang tepat untuk kebutuhan kantor atau instansi Anda.</p>
+          <a href="#artikel-2" class="article-read-more">Baca Selengkapnya →</a>
+        </div>
+      </article>
+
+      <!-- Artikel 3 -->
+      <article class="article-card reveal" data-category="antrian">
+        <div class="article-thumb" aria-hidden="true">⚙️</div>
+        <div class="article-body">
+          <div class="article-meta">
+            <span class="article-tag tag-antrian">Mesin Antrian</span>
+            <span class="article-date">20 April 2026</span>
+          </div>
+          <h2>Panduan Memilih Mesin Antrian Sesuai Skala Bisnis</h2>
+          <p>Klinik kecil, bank besar, atau kantor pemerintah — kebutuhan setiap tempat berbeda. Simak panduan lengkap memilih seri mesin antrian yang tepat agar investasi Anda optimal.</p>
+          <a href="#artikel-3" class="article-read-more">Baca Selengkapnya →</a>
+        </div>
+      </article>
+
+      <!-- Artikel 4 -->
+      <article class="article-card reveal" data-category="security">
+        <div class="article-thumb" aria-hidden="true">🔐</div>
+        <div class="article-body">
+          <div class="article-meta">
+            <span class="article-tag tag-security">Security System</span>
+            <span class="article-date">18 April 2026</span>
+          </div>
+          <h2>Perbedaan Autogate, Smartlock, dan Palang Parkir — Mana yang Anda Butuhkan?</h2>
+          <p>Ketiga produk ini sering dikira sama. Padahal masing-masing memiliki fungsi dan area penerapan yang berbeda. Artikel ini membantu Anda membuat keputusan yang tepat sebelum berkonsultasi dengan tim kami.</p>
+          <a href="#artikel-4" class="article-read-more">Baca Selengkapnya →</a>
+        </div>
+      </article>
+
+      <!-- Artikel 5 -->
+      <article class="article-card reveal" data-category="security">
+        <div class="article-thumb" aria-hidden="true">📷</div>
+        <div class="article-body">
+          <div class="article-meta">
+            <span class="article-tag tag-security">Security System</span>
+            <span class="article-date">22 April 2026</span>
+          </div>
+          <h2>Tips Memilih CCTV untuk Gedung Kantor dan Perumahan</h2>
+          <p>Resolusi, jangkauan, dan fitur night vision — ada banyak spesifikasi yang membingungkan. Kami rangkumkan parameter terpenting yang harus Anda perhatikan sebelum membeli sistem CCTV.</p>
+          <a href="#artikel-5" class="article-read-more">Baca Selengkapnya →</a>
+        </div>
+      </article>
+
+      <!-- Artikel 6 -->
+      <article class="article-card reveal" data-category="ppob">
+        <div class="article-thumb" aria-hidden="true">💳</div>
+        <div class="article-body">
+          <div class="article-meta">
+            <span class="article-tag tag-ppob">PPOB</span>
+            <span class="article-date">25 April 2026</span>
+          </div>
+          <h2>Cara Mulai Bisnis PPOB dari Nol: Modal Kecil, Keuntungan Rutin</h2>
+          <p>PPOB (Payment Point Online Bank) adalah bisnis pembayaran digital yang bisa dijalankan dari toko kelontong hingga warung kecil. Pelajari cara daftar, modal awal, dan estimasi penghasilan bulanan.</p>
+          <a href="#artikel-6" class="article-read-more">Baca Selengkapnya →</a>
+        </div>
+      </article>
+
+      <!-- Artikel 7 -->
+      <article class="article-card reveal" data-category="ppob">
+        <div class="article-thumb" aria-hidden="true">⚡</div>
+        <div class="article-body">
+          <div class="article-meta">
+            <span class="article-tag tag-ppob">PPOB</span>
+            <span class="article-date">28 April 2026</span>
+          </div>
+          <h2>Daftar Produk PPOB Paling Laris dan Marginnya</h2>
+          <p>Listrik, pulsa, BPJS, atau top-up e-wallet — mana yang paling banyak diminta pelanggan? Kami bagikan data transaksi dan estimasi komisi agar Anda bisa memilih produk prioritas.</p>
+          <a href="#artikel-7" class="article-read-more">Baca Selengkapnya →</a>
+        </div>
+      </article>
+
+      <!-- Artikel 8 -->
+      <article class="article-card reveal" data-category="umum">
+        <div class="article-thumb" aria-hidden="true">🚀</div>
+        <div class="article-body">
+          <div class="article-meta">
+            <span class="article-tag tag-umum">Tips Umum</span>
+            <span class="article-date">1 Mei 2026</span>
+          </div>
+          <h2>Digitalisasi Bisnis Lokal: Dari Mana Harus Mulai?</h2>
+          <p>Banyak UMKM dan instansi ingin go digital tapi bingung langkah pertamanya. Artikel ini memberikan peta jalan sederhana dari konsultasi, instalasi, hingga evaluasi performa sistem.</p>
+          <a href="#artikel-8" class="article-read-more">Baca Selengkapnya →</a>
+        </div>
+      </article>
+
+      <!-- Artikel 9 -->
+      <article class="article-card reveal" data-category="umum">
+        <div class="article-thumb" aria-hidden="true">🛡️</div>
+        <div class="article-body">
+          <div class="article-meta">
+            <span class="article-tag tag-umum">Tips Umum</span>
+            <span class="article-date">3 Mei 2026</span>
+          </div>
+          <h2>ROI Teknologi: Cara Menghitung Balik Modal Investasi Sistem Antrian & Security</h2>
+          <p>Investasi teknologi terasa mahal di awal, tapi bagaimana cara mengukur manfaatnya? Pelajari formula ROI sederhana yang bisa langsung Anda terapkan sebelum membeli produk SEPTA.</p>
+          <a href="#artikel-9" class="article-read-more">Baca Selengkapnya →</a>
+        </div>
+      </article>
+
+    </div><!-- /.edu-grid -->
+
+    <!-- Newsletter / CTA -->
+    <div class="edu-cta">
+      <h3>Dapatkan Artikel Terbaru dari SEPTA</h3>
+      <p>Tips teknologi, panduan produk, dan penawaran spesial langsung ke WhatsApp Anda.</p>
+      <div class="edu-cta-form">
+        <a href="https://wa.me/6282235352270?text=Halo%20SEPTA%2C%20saya%20ingin%20berlangganan%20info%20terbaru%20dari%20Anda." target="_blank" rel="noopener noreferrer" class="btn-primary">
+          Hubungi via WhatsApp 💬
+        </a>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ===== FOOTER ===== -->
+  <footer class="footer">
+    <div class="container footer-inner">
+      <div class="footer-brand">
+        <a href="/" class="logo">
+          <img src="/logo-256.png" alt="SEPTA Logo" class="logo-icon" />
+          <span>SEPTA</span>
+        </a>
+        <p>Secure Electronic Point to All — solusi mesin antrian, security system &amp; PPOB terpercaya.</p>
+      </div>
+      <div class="footer-links">
+        <h4>Layanan</h4>
+        <ul>
+          <li><a href="/#antrian">Mesin Antrian</a></li>
+          <li><a href="/#security">Security System</a></li>
+          <li><a href="/#ppob">PPOB</a></li>
+        </ul>
+      </div>
+      <div class="footer-links">
+        <h4>Informasi</h4>
+        <ul>
+          <li><a href="/#tentang">Tentang Kami</a></li>
+          <li><a href="/edukasi">Edukasi</a></li>
+          <li><a href="/#kontak">Kontak</a></li>
+        </ul>
+      </div>
+      <div class="footer-links">
+        <h4>Ikuti Kami</h4>
+        <ul>
+          <li><a href="#">Facebook</a></li>
+          <li><a href="#">Instagram</a></li>
+          <li><a href="#">TikTok</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; 2026 SEPTA – Secure Electronic Point to All. Semua hak dilindungi.</p>
+      <p class="footer-legal">Terdaftar sebagai usaha resmi di Indonesia &nbsp;·&nbsp; <a href="#" class="footer-policy-link">Kebijakan Privasi</a></p>
+    </div>
+  </footer>
+
+  <!-- Float WA -->
+  <a href="https://wa.me/6282235352270" class="float-wa" target="_blank" rel="noopener noreferrer" aria-label="Chat WhatsApp">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="28" height="28">
+      <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.867-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.521.149-.172.198-.296.298-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/>
+    </svg>
+  </a>
+  <button class="btn-top" id="btnTop" aria-label="Kembali ke atas">↑</button>
+
+  <script>
+    // Navbar scroll
+    const navbar = document.getElementById('navbar');
+    const btnTop = document.getElementById('btnTop');
+    window.addEventListener('scroll', () => {
+      navbar.classList.toggle('scrolled', window.scrollY > 30);
+      btnTop.classList.toggle('visible', window.scrollY > 400);
+    }, { passive: true });
+    btnTop.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+
+    // Hamburger
+    const hamburger = document.getElementById('hamburger');
+    const navLinks  = document.getElementById('navLinks');
+    hamburger.addEventListener('click', () => {
+      navLinks.classList.toggle('open');
+      hamburger.classList.toggle('open');
+    });
+
+    // Filter kategori
+    const filterBtns = document.querySelectorAll('.edu-filter-btn');
+    const articles   = document.querySelectorAll('.article-card');
+    filterBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        filterBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const filter = btn.dataset.filter;
+        articles.forEach(card => {
+          const match = filter === 'all' || card.dataset.category === filter;
+          card.classList.toggle('hidden', !match);
+          // Featured card loses its special layout when filtered
+          if (card.classList.contains('featured')) {
+            card.style.gridColumn = (filter === 'all' || filter === 'antrian') ? '1 / -1' : '';
+          }
+        });
+      });
+    });
+
+    // Scroll reveal
+    const revealObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          revealObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+    document.querySelectorAll('.reveal').forEach((el, i) => {
+      el.style.transitionDelay = (i % 3) * 0.08 + 's';
+      revealObserver.observe(el);
+    });
+  </script>
+</body>
+</html>

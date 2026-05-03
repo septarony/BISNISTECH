@@ -155,6 +155,57 @@ window.addEventListener('load', () => {
   if (preloader) setTimeout(() => preloader.classList.add('hide'), 300);
 });
 
+// ===== DYNAMIC META TAGS PER SECTION =====
+const sectionMeta = {
+  hero: {
+    title: 'SEPTA – Mesin Antrian, Security System & PPOB',
+    description: 'SEPTA – Solusi teknologi terpercaya: mesin antrian digital, security system, dan layanan PPOB terlengkap. Hubungi kami sekarang!'
+  },
+  'mesin-antrian': {
+    title: 'Mesin Antrian Digital – SEPTA',
+    description: 'Sistem antrian digital SEPTA: touch screen, thermal printer, koneksi jaringan. Cocok untuk bank, rumah sakit, dan instansi pemerintah.'
+  },
+  security: {
+    title: 'Security System – SEPTA | Autogate, Smartlock, Palang Parkir',
+    description: 'Solusi keamanan SEPTA: autogate, smartlock, palang parkir, CCTV, dan access control terpercaya untuk gedung dan kawasan perumahan.'
+  },
+  ppob: {
+    title: 'PPOB – SEPTA | Pembayaran Tagihan & Top Up Digital',
+    description: 'Layanan PPOB SEPTA: pembayaran listrik, air, BPJS, internet, top up pulsa dan e-wallet. Komisi menarik dan transaksi real-time.'
+  },
+  kontak: {
+    title: 'Hubungi SEPTA – Konsultasi Gratis',
+    description: 'Konsultasi gratis produk SEPTA: mesin antrian, security system, dan PPOB. Hubungi tim kami via WhatsApp atau form kontak.'
+  }
+};
+
+const metaDescEl = document.querySelector('meta[name="description"]');
+const ogTitleEl  = document.querySelector('meta[property="og:title"]');
+const ogDescEl   = document.querySelector('meta[property="og:description"]');
+const twTitleEl  = document.querySelector('meta[name="twitter:title"]');
+const twDescEl   = document.querySelector('meta[name="twitter:description"]');
+
+function updatePageMeta(sectionId) {
+  const meta = sectionMeta[sectionId];
+  if (!meta) return;
+  document.title = meta.title;
+  if (metaDescEl) metaDescEl.setAttribute('content', meta.description);
+  if (ogTitleEl)  ogTitleEl.setAttribute('content', meta.title);
+  if (ogDescEl)   ogDescEl.setAttribute('content', meta.description);
+  if (twTitleEl)  twTitleEl.setAttribute('content', meta.title);
+  if (twDescEl)   twDescEl.setAttribute('content', meta.description);
+}
+
+const metaSections = document.querySelectorAll('section[id]');
+const metaObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      updatePageMeta(entry.target.getAttribute('id'));
+    }
+  });
+}, { threshold: 0.35 });
+metaSections.forEach(s => metaObserver.observe(s));
+
 // ===== BACK TO TOP =====
 const btnTop = document.getElementById('btnTop');
 window.addEventListener('scroll', () => {

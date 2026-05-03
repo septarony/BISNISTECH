@@ -12,38 +12,192 @@
   <meta property="og:type" content="website" />
   <meta property="og:title" content="SEPTA – Mesin Antrian, Security System & PPOB" />
   <meta property="og:description" content="Solusi teknologi terpercaya: mesin antrian digital, security system (autogate, smartlock, palang parkir), dan PPOB terlengkap." />
-  <meta property="og:url" content="https://septa.id" />
-  <meta property="og:image" content="https://septa.id/assets/og-image.jpg" />
+  <meta property="og:url" content="https://bisnistech.vercel.app" />
+  <meta property="og:image" content="https://bisnistech.vercel.app/assets/og-image.jpg" />
   <meta property="og:locale" content="id_ID" />
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="SEPTA – Mesin Antrian, Security System & PPOB" />
   <meta name="twitter:description" content="Solusi teknologi terpercaya: mesin antrian digital, security system (autogate, smartlock, palang parkir), dan PPOB terlengkap." />
+  <!-- Sitemap -->
+  <link rel="sitemap" type="application/xml" href="/sitemap.xml" />
   <!-- Favicon -->
   <link rel="icon" type="image/png" href="favicon-64.png" />
   <link rel="apple-touch-icon" href="apple-touch-icon.png" />
-  <!-- JSON-LD Structured Data -->
+  <!-- JSON-LD: LocalBusiness -->
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
     "@type": "LocalBusiness",
+    "@id": "https://bisnistech.vercel.app/#organization",
     "name": "SEPTA",
     "alternateName": "Secure Electronic Point to All",
-    "description": "Penyedia mesin antrian digital, security system (autogate, smartlock, palang parkir), dan layanan PPOB terpercaya.",
+    "description": "Penyedia mesin antrian digital, security system (autogate, smartlock, palang parkir), dan layanan PPOB terpercaya di Indonesia.",
+    "url": "https://bisnistech.vercel.app",
+    "logo": "https://bisnistech.vercel.app/logo-256.png",
+    "image": "https://bisnistech.vercel.app/logo-256.png",
     "telephone": "+6282235352270",
     "email": "info@septa.id",
+    "priceRange": "Rp",
+    "currenciesAccepted": "IDR",
+    "paymentAccepted": "Cash, Transfer Bank",
+    "areaServed": {
+      "@type": "Country",
+      "name": "Indonesia"
+    },
     "address": {
       "@type": "PostalAddress",
       "streetAddress": "Jl. Teknologi No. 1",
       "addressLocality": "Kota Anda",
+      "addressRegion": "Provinsi Anda",
+      "postalCode": "00000",
       "addressCountry": "ID"
     },
     "openingHoursSpecification": [
-      { "@type": "OpeningHoursSpecification", "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"], "opens": "08:00", "closes": "20:00" },
-      { "@type": "OpeningHoursSpecification", "dayOfWeek": ["Sunday"], "opens": "09:00", "closes": "17:00" }
+      {
+        "@type": "OpeningHoursSpecification",
+        "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"],
+        "opens": "08:00",
+        "closes": "20:00"
+      },
+      {
+        "@type": "OpeningHoursSpecification",
+        "dayOfWeek": ["Sunday"],
+        "opens": "09:00",
+        "closes": "17:00"
+      }
     ],
-    "url": "https://septa.id",
-    "aggregateRating": { "@type": "AggregateRating", "ratingValue": "5", "reviewCount": "500" }
+    "contactPoint": {
+      "@type": "ContactPoint",
+      "contactType": "customer service",
+      "telephone": "+6282235352270",
+      "availableLanguage": "Indonesian",
+      "contactOption": "TollFree"
+    },
+    "sameAs": [
+      "https://wa.me/6282235352270"
+    ],
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": "5",
+      "bestRating": "5",
+      "worstRating": "1",
+      "reviewCount": "500"
+    },
+    "review": [
+      {
+        "@type": "Review",
+        "author": { "@type": "Person", "name": "Pelanggan SEPTA" },
+        "reviewRating": { "@type": "Rating", "ratingValue": "5", "bestRating": "5" },
+        "reviewBody": "Mesin antrian SEPTA sangat membantu efisiensi pelayanan di klinik kami. Instalasi cepat dan tim sangat responsif."
+      }
+    ],
+    "hasOfferCatalog": {
+      "@type": "OfferCatalog",
+      "name": "Layanan SEPTA",
+      "itemListElement": [
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Mesin Antrian Digital",
+            "description": "Sistem antrian digital touch screen dengan thermal printer dan koneksi jaringan untuk bank, rumah sakit, dan instansi.",
+            "url": "https://bisnistech.vercel.app/layanan/mesin-antrian"
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Security System",
+            "description": "Autogate, smartlock, palang parkir, CCTV, dan access control untuk gedung dan kawasan perumahan.",
+            "url": "https://bisnistech.vercel.app/layanan/security"
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "PPOB & Pembayaran Digital",
+            "description": "Pembayaran listrik, air, BPJS, internet, top up pulsa dan e-wallet dengan komisi menarik dan transaksi real-time.",
+            "url": "https://bisnistech.vercel.app/layanan/ppob"
+          }
+        }
+      ]
+    }
+  }
+  </script>
+
+  <!-- JSON-LD: FAQPage -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "Apa saja layanan utama yang disediakan SEPTA?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "SEPTA menyediakan tiga layanan utama: (1) Mesin Antrian Digital untuk rumah sakit, bank, dan instansi; (2) Security System meliputi autogate, smartlock, palang parkir, dan CCTV; serta (3) PPOB (Pembayaran Tagihan Online) yang mudah dan cepat."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Bagaimana cara kerja mesin antrian digital?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Mesin antrian digital terdiri dari token dispenser (pencetak nomor), display pemanggil, dan software manajemen. Pelanggan mengambil nomor antrian, lalu dipanggil secara urut melalui layar display disertai suara. Sistem dapat dikelola dari dashboard real-time."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Apa perbedaan autogate, smartlock, dan palang parkir?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Autogate adalah pintu gerbang otomatis untuk akses kendaraan atau pejalan kaki. Smartlock adalah kunci pintu digital (fingerprint/RFID/PIN). Palang parkir (barrier gate) adalah bom parkir otomatis untuk mengatur keluar-masuk kendaraan di area parkir."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Apakah bisa konsultasi dahulu sebelum melakukan pemesanan?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Tentu! Kami menyediakan konsultasi gratis tanpa syarat. Hubungi kami via WhatsApp, telepon, atau datang langsung. Tim kami akan melakukan survei lokasi dan merekomendasikan solusi terbaik sesuai kebutuhan dan anggaran Anda."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Bagaimana cara melakukan pembayaran PPOB?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Cukup datang ke toko kami atau hubungi via WhatsApp dengan menyebutkan jenis tagihan dan nomor pelanggan Anda. Pembayaran dapat dilakukan tunai maupun transfer. Proses selesai dalam hitungan menit."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Apakah SEPTA melayani instalasi di luar kota?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Untuk layanan PPOB, kami melayani dari seluruh Indonesia. Untuk instalasi mesin antrian dan security system, saat ini kami melayani area sekitar kota kami. Hubungi kami untuk informasi lebih lanjut mengenai jangkauan layanan."
+        }
+      }
+    ]
+  }
+  </script>
+
+  <!-- JSON-LD: WebSite + SearchAction -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "url": "https://bisnistech.vercel.app",
+    "name": "SEPTA",
+    "description": "Solusi mesin antrian digital, security system, dan PPOB terpercaya.",
+    "inLanguage": "id-ID",
+    "publisher": {
+      "@id": "https://bisnistech.vercel.app/#organization"
+    }
   }
   </script>
   <link rel="stylesheet" href="style.css" />
@@ -75,6 +229,7 @@
         <li><a href="#security">Security</a></li>
         <li><a href="#ppob">PPOB</a></li>
         <li><a href="#tentang">Tentang</a></li>
+        <li><a href="/edukasi">Edukasi</a></li>
         <li><a href="#kontak" class="btn-nav">Hubungi Kami</a></li>
       </ul>
       <button class="hamburger" id="hamburger" aria-label="Menu">
@@ -135,7 +290,7 @@
             <li>✓ Software Manajemen Antrian</li>
             <li>✓ Instalasi &amp; Maintenance</li>
           </ul>
-          <a href="katalog-antrian.html" class="card-link" target="_blank" rel="noopener">Lihat Produk →</a>
+          <a href="/katalog/mesin-antrian" class="card-link" target="_blank" rel="noopener">Lihat Produk →</a>
         </div>
 
         <div class="card card-security card-featured">
@@ -222,7 +377,7 @@
             <li>✓ Format mudah dibaca di samping gambar</li>
             <li>✓ Cocok untuk klinik, bank, dan kantor layanan</li>
           </ul>
-          <a href="katalog-antrian.html" class="card-link" target="_blank" rel="noopener">Buka Katalog Mesin Antrian →</a>
+          <a href="/katalog/mesin-antrian" class="card-link" target="_blank" rel="noopener">Buka Katalog Mesin Antrian →</a>
         </div>
 
         <div class="card card-security">
@@ -672,6 +827,7 @@
         <ul>
           <li><a href="#tentang">Tentang Kami</a></li>
           <li><a href="#produk">Produk</a></li>
+          <li><a href="/edukasi">Edukasi</a></li>
           <li><a href="#kontak">Kontak</a></li>
         </ul>
       </div>
