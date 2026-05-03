@@ -556,10 +556,10 @@
     const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY
 
     const CATEGORY_MAP = {
-      'Mesin Antrian':   { slug: 'antrian',  tag: 'tag-antrian',  icon: '🖨️',  label: 'Mesin Antrian' },
-      'Security System': { slug: 'security', tag: 'tag-security', icon: '🔐', label: 'Security System' },
-      'PPOB':            { slug: 'ppob',     tag: 'tag-ppob',     icon: '💳', label: 'PPOB' },
-      'Tips Umum':       { slug: 'umum',     tag: 'tag-umum',     icon: '🚀', label: 'Tips Umum' },
+      'Mesin Antrian':   { slug: 'antrian',  tag: 'tag-antrian',  icon: 'Q', label: 'Mesin Antrian' },
+      'Security System': { slug: 'security', tag: 'tag-security', icon: 'S', label: 'Security System' },
+      'PPOB':            { slug: 'ppob',     tag: 'tag-ppob',     icon: 'P', label: 'PPOB' },
+      'Tips Umum':       { slug: 'umum',     tag: 'tag-umum',     icon: 'T', label: 'Tips Umum' },
     }
 
     function formatDate(iso) {
@@ -576,7 +576,7 @@
     let articlesCache = []
 
     function buildCard(article, index) {
-      const cat = CATEGORY_MAP[article.category] || { slug: 'umum', tag: 'tag-umum', icon: '📝', label: esc(article.category) }
+      const cat = CATEGORY_MAP[article.category] || { slug: 'umum', tag: 'tag-umum', icon: 'A', label: esc(article.category) }
       const featured = index === 0 ? 'featured' : ''
       const text = (article.content || '').replace(/<[^>]+>/g, '')
       const preview = text.length > 180 ? text.slice(0, 180) + '\u2026' : text
@@ -584,7 +584,7 @@
         ? `<img class="article-thumb" src="${esc(article.image_url)}" alt="${esc(article.title)}" loading="lazy" />`
         : `<div class="article-thumb" aria-hidden="true">${cat.icon}</div>`
       return `
-        <article class="article-card ${featured} reveal" data-category="${cat.slug}" data-id="${article.id}" onclick="openArticle(${article.id})">
+        <article class="article-card ${featured} reveal" data-category="${cat.slug}" data-id="${article.id}">
           ${thumb}
           <div class="article-body">
             <div class="article-meta">
@@ -601,7 +601,7 @@
     function openArticle(id) {
       const article = articlesCache.find(a => a.id === id)
       if (!article) return
-      const cat = CATEGORY_MAP[article.category] || { slug: 'umum', tag: 'tag-umum', icon: '📝', label: article.category }
+      const cat = CATEGORY_MAP[article.category] || { slug: 'umum', tag: 'tag-umum', icon: 'A', label: article.category }
       const modal = document.getElementById('articleModal')
       document.getElementById('modalTag').className = 'article-tag ' + cat.tag
       document.getElementById('modalTag').textContent = cat.label
@@ -625,6 +625,15 @@
       document.body.style.overflow = ''
     }
 
+    function attachArticleEvents() {
+      document.querySelectorAll('.article-card').forEach(card => {
+        card.addEventListener('click', () => {
+          const id = Number(card.dataset.id)
+          if (Number.isFinite(id)) openArticle(id)
+        })
+      })
+    }
+
     async function loadArticles() {
       const grid = document.getElementById('articleGrid')
       if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
@@ -644,6 +653,7 @@
         }
         articlesCache = articles
         grid.innerHTML = articles.map(buildCard).join('')
+        attachArticleEvents()
         window.initEduFilters()
       } catch {
         grid.innerHTML = '<p style="grid-column:1/-1;text-align:center;padding:60px 0;color:var(--text-muted)">Gagal memuat artikel. Silakan refresh halaman.</p>'
