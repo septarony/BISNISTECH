@@ -208,19 +208,107 @@
     }
     .article-read-more:hover { color: #fff; gap: 10px; }
 
+    /* Card clickable */
+    .article-card { cursor: pointer; }
+
     /* Featured article */
     .article-card.featured {
       grid-column: 1 / -1;
       flex-direction: row;
     }
     .article-card.featured .article-thumb {
-      min-width: 340px;
-      aspect-ratio: auto;
+      width: 360px;
+      min-width: 360px;
+      max-width: 360px;
+      height: 260px;
+      flex-shrink: 0;
+      aspect-ratio: unset;
+      object-fit: cover;
       font-size: 5rem;
     }
     @media (max-width: 700px) {
       .article-card.featured { flex-direction: column; }
-      .article-card.featured .article-thumb { min-width: unset; aspect-ratio: 16/9; }
+      .article-card.featured .article-thumb { width: 100%; min-width: unset; max-width: unset; height: auto; aspect-ratio: 16/9; }
+    }
+
+    /* Article Modal */
+    .article-modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      background: rgba(0,0,0,.75);
+      backdrop-filter: blur(4px);
+      padding: 24px 16px;
+      overflow-y: auto;
+    }
+    .article-modal-overlay.open { display: flex; justify-content: center; align-items: flex-start; }
+    .article-modal {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      width: 100%;
+      max-width: 760px;
+      box-shadow: 0 24px 80px rgba(0,0,0,.6);
+      animation: modalIn .22s ease;
+    }
+    @keyframes modalIn {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .article-modal-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 24px 28px 20px;
+      border-bottom: 1px solid var(--border);
+    }
+    .article-modal-close {
+      flex-shrink: 0;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: 1px solid var(--border);
+      background: none;
+      color: var(--text-secondary);
+      font-size: 1.25rem;
+      line-height: 1;
+      cursor: pointer;
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .article-modal-close:hover { background: var(--bg-secondary); color: var(--text-primary); }
+    .article-modal-img {
+      width: 100%;
+      max-height: 360px;
+      object-fit: cover;
+      display: block;
+    }
+    .article-modal-body {
+      padding: 28px;
+    }
+    .article-modal-body h2 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(1.25rem, 3vw, 1.75rem);
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 8px;
+      line-height: 1.35;
+    }
+    .article-modal-meta {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 24px;
+    }
+    .article-modal-content {
+      font-size: 0.95rem;
+      color: var(--text-secondary);
+      line-height: 1.8;
+      white-space: pre-wrap;
     }
 
     /* Newsletter CTA */
@@ -377,6 +465,26 @@
     </div>
   </footer>
 
+  <!-- ===== ARTICLE MODAL ===== -->
+  <div class="article-modal-overlay" id="articleModal" onclick="if(event.target===this)closeArticleModal()" role="dialog" aria-modal="true">
+    <div class="article-modal">
+      <div class="article-modal-header">
+        <div>
+          <div class="article-modal-meta">
+            <span id="modalTag" class="article-tag"></span>
+            <span id="modalDate" class="article-date"></span>
+          </div>
+          <h2 id="modalTitle" style="font-family:'Space Grotesk',sans-serif;font-size:clamp(1.1rem,3vw,1.5rem);font-weight:700;color:var(--text-primary);line-height:1.35;"></h2>
+        </div>
+        <button class="article-modal-close" onclick="closeArticleModal()" aria-label="Tutup">&times;</button>
+      </div>
+      <img id="modalImg" class="article-modal-img" src="" alt="" />
+      <div class="article-modal-body">
+        <p id="modalContent" class="article-modal-content"></p>
+      </div>
+    </div>
+  </div>
+
   <!-- Float WA -->
   <a href="https://wa.me/6282235352270" class="float-wa" target="_blank" rel="noopener noreferrer" aria-label="Chat WhatsApp">
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="28" height="28">
@@ -386,6 +494,11 @@
   <button class="btn-top" id="btnTop" aria-label="Kembali ke atas">↑</button>
 
   <script>
+    // Tutup modal dengan Escape
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') closeArticleModal()
+    })
+
     // Navbar scroll
     const navbar = document.getElementById('navbar');
     const btnTop = document.getElementById('btnTop');
@@ -459,16 +572,19 @@
       return d.innerHTML
     }
 
+    // Cache artikel untuk modal
+    let articlesCache = []
+
     function buildCard(article, index) {
       const cat = CATEGORY_MAP[article.category] || { slug: 'umum', tag: 'tag-umum', icon: '📝', label: esc(article.category) }
       const featured = index === 0 ? 'featured' : ''
       const text = (article.content || '').replace(/<[^>]+>/g, '')
-      const preview = text.length > 220 ? text.slice(0, 220) + '\u2026' : text
+      const preview = text.length > 180 ? text.slice(0, 180) + '\u2026' : text
       const thumb = article.image_url
         ? `<img class="article-thumb" src="${esc(article.image_url)}" alt="${esc(article.title)}" loading="lazy" />`
         : `<div class="article-thumb" aria-hidden="true">${cat.icon}</div>`
       return `
-        <article class="article-card ${featured} reveal" data-category="${cat.slug}">
+        <article class="article-card ${featured} reveal" data-category="${cat.slug}" data-id="${article.id}" onclick="openArticle(${article.id})">
           ${thumb}
           <div class="article-body">
             <div class="article-meta">
@@ -477,8 +593,36 @@
             </div>
             <h2>${esc(article.title)}</h2>
             <p>${esc(preview)}</p>
+            <span class="article-read-more">Baca Selengkapnya <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
           </div>
         </article>`
+    }
+
+    function openArticle(id) {
+      const article = articlesCache.find(a => a.id === id)
+      if (!article) return
+      const cat = CATEGORY_MAP[article.category] || { slug: 'umum', tag: 'tag-umum', icon: '📝', label: article.category }
+      const modal = document.getElementById('articleModal')
+      document.getElementById('modalTag').className = 'article-tag ' + cat.tag
+      document.getElementById('modalTag').textContent = cat.label
+      document.getElementById('modalDate').textContent = formatDate(article.created_at)
+      document.getElementById('modalTitle').textContent = article.title
+      document.getElementById('modalContent').textContent = article.content || ''
+      const imgEl = document.getElementById('modalImg')
+      if (article.image_url) {
+        imgEl.src = article.image_url
+        imgEl.alt = article.title
+        imgEl.style.display = 'block'
+      } else {
+        imgEl.style.display = 'none'
+      }
+      modal.classList.add('open')
+      document.body.style.overflow = 'hidden'
+    }
+
+    window.closeArticleModal = function() {
+      document.getElementById('articleModal').classList.remove('open')
+      document.body.style.overflow = ''
     }
 
     async function loadArticles() {
@@ -498,6 +642,7 @@
           grid.innerHTML = '<p style="grid-column:1/-1;text-align:center;padding:60px 0;color:var(--text-muted)">Belum ada artikel. Tambahkan melalui Admin CMS.</p>'
           return
         }
+        articlesCache = articles
         grid.innerHTML = articles.map(buildCard).join('')
         window.initEduFilters()
       } catch {
