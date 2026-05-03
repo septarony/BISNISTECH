@@ -270,54 +270,48 @@ function Dashboard({ session }) {
       image_url: form.image_url.trim() || null,
     }
 
-    let rows
+    let count
     let error
     if (editId) {
-      ;({ data: rows, error } = await supabase
+      ;({ count, error } = await supabase
         .from('articles')
-        .update(payload)
-        .eq('id', editId)
-        .select('id, title, content, category, image_url, created_at'))
+        .update(payload, { count: 'exact' })
+        .eq('id', editId))
     } else {
-      ;({ data: rows, error } = await supabase
+      ;({ count, error } = await supabase
         .from('articles')
-        .insert(payload)
-        .select('id, title, content, category, image_url, created_at'))
+        .insert(payload, { count: 'exact' }))
     }
 
     setSaving(false)
     if (error) return showToast('error', error.message)
 
-    const savedArticle = Array.isArray(rows) ? rows[0] : null
-    if (!savedArticle) {
-      return showToast('error', 'Data artikel tidak ditemukan saat menyimpan. Silakan refresh halaman.')
+    if (editId && (!count || count < 1)) {
+      return showToast('error', 'Perubahan tidak tersimpan. Kemungkinan policy database (RLS) menolak update.')
     }
-
-    if (editId) {
-      setArticles(current => current.map(article => article.id === editId ? savedArticle : article))
-    } else {
-      setArticles(current => [savedArticle, ...current])
+    if (!editId && (!count || count < 1)) {
+      return showToast('error', 'Artikel baru gagal disimpan. Periksa policy database atau sesi login admin.')
     }
 
     showToast('success', editId ? 'Artikel berhasil diperbarui.' : 'Artikel berhasil ditambahkan.')
     setFormOpen(false)
     setEditId(null)
     setForm(EMPTY_FORM)
+    fetchArticles()
   }
 
   // ── Delete ─────────────────────────────────────────────────────────────────
   async function handleDelete() {
     const currentDeleteId = deleteId
-    const { data: deletedRows, error } = await supabase
+    const { count, error } = await supabase
       .from('articles')
-      .delete()
+      .delete({ count: 'exact' })
       .eq('id', currentDeleteId)
-      .select('id')
 
     setDeleteId(null)
     if (error) return showToast('error', error.message)
-    if (!Array.isArray(deletedRows) || deletedRows.length === 0) {
-      return showToast('error', 'Artikel gagal dihapus atau sudah tidak tersedia.')
+    if (!count || count < 1) {
+      return showToast('error', 'Artikel gagal dihapus. Kemungkinan policy database (RLS) menolak delete.')
     }
 
     setArticles(current => current.filter(article => article.id !== currentDeleteId))
