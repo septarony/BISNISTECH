@@ -1,4 +1,8 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
+import { useEditor, EditorContent } from '@tiptap/react'
+import StarterKit from '@tiptap/starter-kit'
+import Link from '@tiptap/extension-link'
+import TipTapImage from '@tiptap/extension-image'
 import { supabase, isSupabaseConfigured, missingSupabaseVars } from '../supabaseClient'
 
 // ─── Konstanta ────────────────────────────────────────────────────────────────
@@ -6,7 +10,105 @@ const CATEGORIES = ['Mesin Antrian', 'Security System', 'PPOB', 'Tips Umum']
 const ADMIN_EMAIL = (import.meta.env.VITE_ADMIN_EMAIL || '').trim().toLowerCase()
 const MAX_IMAGE_SIZE_BYTES = 2 * 1024 * 1024
 
-const EMPTY_FORM = { title: '', content: '', category: CATEGORIES[0], image_url: '' }
+const EMPTY_FORM = { title: '', content: '<p></p>', category: CATEGORIES[0], image_url: '' }
+
+// ─── Toolbar editor ──────────────────────────────────────────────────────────
+function RichToolbar({ editor }) {
+  const [linkUrl, setLinkUrl]       = useState('')
+  const [showLinkBox, setShowLinkBox] = useState(false)
+  const fileRef = useRef(null)
+
+  if (!editor) return null
+
+  function toggleBold()   { editor.chain().focus().toggleBold().run() }
+  function toggleItalic() { editor.chain().focus().toggleItalic().run() }
+  function toggleStrike() { editor.chain().focus().toggleStrike().run() }
+  function toggleBullet() { editor.chain().focus().toggleBulletList().run() }
+  function toggleOrdered(){ editor.chain().focus().toggleOrderedList().run() }
+  function toggleHeading(level){ editor.chain().focus().toggleHeading({ level }).run() }
+
+  function applyLink() {
+    if (!linkUrl.trim()) {
+      editor.chain().focus().unsetLink().run()
+    } else {
+      const href = /^https?:\/\//i.test(linkUrl.trim()) ? linkUrl.trim() : 'https://' + linkUrl.trim()
+      editor.chain().focus().setLink({ href, target: '_blank' }).run()
+    }
+    setLinkUrl('')
+    setShowLinkBox(false)
+  }
+
+  function insertImageFromFile(e) {
+    const file = e.target.files?.[0]
+    if (!file) return
+    if (file.size > MAX_IMAGE_SIZE_BYTES) { alert('Ukuran gambar maksimal 2 MB.'); e.target.value = ''; return }
+    const reader = new FileReader()
+    reader.onload = () => {
+      editor.chain().focus().setImage({ src: String(reader.result) }).run()
+    }
+    reader.readAsDataURL(file)
+    e.target.value = ''
+  }
+
+  const btn = (active, title, onClick, children) => (
+    <button
+      key={title}
+      type="button"
+      title={title}
+      onClick={onClick}
+      className={`px-2 py-1 rounded text-sm font-medium transition ${
+        active ? 'bg-indigo-600 text-white' : 'text-gray-300 hover:bg-gray-700'
+      }`}
+    >{children}</button>
+  )
+
+  return (
+    <div className="flex flex-wrap items-center gap-0.5 px-2 py-2 border-b border-gray-700 bg-gray-900/60">
+      {btn(editor.isActive('bold'),           'Bold',          toggleBold,          <b>B</b>)}
+      {btn(editor.isActive('italic'),         'Italic',        toggleItalic,        <em>I</em>)}
+      {btn(editor.isActive('strike'),         'Coret',         toggleStrike,        <s>S</s>)}
+      <span className="w-px h-5 bg-gray-700 mx-1" />
+      {btn(editor.isActive('heading',{level:2}), 'Heading 2', ()=>toggleHeading(2), 'H2')}
+      {btn(editor.isActive('heading',{level:3}), 'Heading 3', ()=>toggleHeading(3), 'H3')}
+      <span className="w-px h-5 bg-gray-700 mx-1" />
+      {btn(editor.isActive('bulletList'),     'Daftar Bullet', toggleBullet,        '• List')}
+      {btn(editor.isActive('orderedList'),    'Daftar Angka',  toggleOrdered,       '1. List')}
+      <span className="w-px h-5 bg-gray-700 mx-1" />
+      {/* Link */}
+      <div className="relative">
+        {btn(editor.isActive('link'), 'Tambah Link', () => {
+          if (editor.isActive('link')) { editor.chain().focus().unsetLink().run(); return }
+          setLinkUrl(editor.getAttributes('link').href || '')
+          setShowLinkBox(v => !v)
+        }, '🔗 Link')}
+        {showLinkBox && (
+          <div className="absolute top-8 left-0 z-20 bg-gray-900 border border-gray-700 rounded-lg p-2 flex gap-2 shadow-xl w-72">
+            <input
+              autoFocus
+              type="url"
+              placeholder="https://..."
+              value={linkUrl}
+              onChange={e => setLinkUrl(e.target.value)}
+              onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); applyLink() } if (e.key === 'Escape') setShowLinkBox(false) }}
+              className="flex-1 bg-gray-800 border border-gray-700 rounded-md px-2.5 py-1.5 text-xs text-white focus:outline-none focus:ring-1 focus:ring-indigo-500"
+            />
+            <button type="button" onClick={applyLink} className="bg-indigo-600 hover:bg-indigo-500 text-white text-xs px-2.5 py-1 rounded-md">OK</button>
+            <button type="button" onClick={() => setShowLinkBox(false)} className="text-gray-400 hover:text-white text-xs px-1.5">✕</button>
+          </div>
+        )}
+      </div>
+      <span className="w-px h-5 bg-gray-700 mx-1" />
+      {/* Gambar inline */}
+      <button
+        type="button"
+        title="Sisipkan Gambar"
+        onClick={() => fileRef.current?.click()}
+        className="px-2 py-1 rounded text-sm text-gray-300 hover:bg-gray-700 transition"
+      >🖼 Gambar</button>
+      <input ref={fileRef} type="file" accept="image/*" onChange={insertImageFromFile} className="hidden" />
+    </div>
+  )
+}
 
 // ─── Komponen utama ───────────────────────────────────────────────────────────
 export default function AdminCMS() {
@@ -177,6 +279,34 @@ function Dashboard({ session }) {
   const [saving, setSaving]       = useState(false)
   const [uploadingImage, setUploadingImage] = useState(false)
 
+  const editor = useEditor({
+    extensions: [
+      StarterKit,
+      Link.configure({ openOnClick: false, autolink: true }),
+      TipTapImage.configure({ inline: true, allowBase64: true }),
+    ],
+    content: EMPTY_FORM.content,
+    onUpdate: ({ editor: e }) => setForm(current => ({ ...current, content: e.getHTML() })),
+    editorProps: {
+      attributes: {
+        class: 'min-h-[240px] px-4 py-3 focus:outline-none text-gray-100 text-sm leading-relaxed',
+      },
+    },
+  })
+
+  // Sync konten editor setiap kali form dibuka (edit/create)
+  const formOpenRef = useRef(false)
+  useEffect(() => {
+    if (formOpen && !formOpenRef.current) {
+      formOpenRef.current = true
+      if (editor && !editor.isDestroyed) {
+        editor.commands.setContent(form.content || '<p></p>', false)
+      }
+    } else if (!formOpen) {
+      formOpenRef.current = false
+    }
+  }, [formOpen, editor]) // eslint-disable-line react-hooks/exhaustive-deps
+
   // ── Fetch ──────────────────────────────────────────────────────────────────
   const fetchArticles = useCallback(async () => {
     setLoading(true)
@@ -257,7 +387,9 @@ function Dashboard({ session }) {
   // ── Submit form (create / update) ──────────────────────────────────────────
   async function handleSubmit(e) {
     e.preventDefault()
-    if (!form.title.trim() || !form.content.trim()) {
+    const htmlContent = editor ? editor.getHTML() : form.content
+    const textContent = (editor ? editor.getText() : form.content).trim()
+    if (!form.title.trim() || !textContent) {
       showToast('error', 'Judul dan isi artikel wajib diisi.')
       return
     }
@@ -265,7 +397,7 @@ function Dashboard({ session }) {
 
     const payload = {
       title:     form.title.trim(),
-      content:   form.content.trim(),
+      content:   htmlContent,
       category:  form.category,
       image_url: form.image_url.trim() || null,
     }
@@ -511,17 +643,14 @@ function Dashboard({ session }) {
                 )}
               </div>
 
-              {/* Isi Artikel */}
+              {/* Isi Artikel - Rich Text Editor */}
               <div>
                 <label className="block text-xs font-medium text-gray-400 mb-1.5">Isi Artikel <span className="text-red-400">*</span></label>
-                <textarea
-                  value={form.content}
-                  onChange={e => setForm(f => ({ ...f, content: e.target.value }))}
-                  required
-                  rows={10}
-                  placeholder="Tulis isi artikel di sini..."
-                  className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3.5 py-2.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition resize-y"
-                />
+                <div className="bg-gray-800 border border-gray-700 rounded-xl overflow-hidden focus-within:ring-2 focus-within:ring-indigo-500 transition">
+                  <RichToolbar editor={editor} />
+                  <EditorContent editor={editor} />
+                </div>
+                <p className="text-[11px] text-gray-500 mt-1.5">Pilih teks lalu klik toolbar untuk format. Gambar bisa disisipkan langsung di dalam teks.</p>
               </div>
 
               {/* Tombol */}

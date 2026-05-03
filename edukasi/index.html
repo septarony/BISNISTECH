@@ -480,7 +480,7 @@
       </div>
       <img id="modalImg" class="article-modal-img" src="" alt="" />
       <div class="article-modal-body">
-        <p id="modalContent" class="article-modal-content"></p>
+        <div id="modalContent" class="article-modal-content article-html-content"></div>
       </div>
     </div>
   </div>
@@ -552,6 +552,7 @@
   </script>
 
   <script type="module">
+    import DOMPurify from 'dompurify'
     const SUPABASE_URL      = import.meta.env.VITE_SUPABASE_URL
     const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY
 
@@ -607,7 +608,7 @@
       document.getElementById('modalTag').textContent = cat.label
       document.getElementById('modalDate').textContent = formatDate(article.created_at)
       document.getElementById('modalTitle').textContent = article.title
-      document.getElementById('modalContent').textContent = article.content || ''
+      document.getElementById('modalContent').innerHTML = DOMPurify.sanitize(article.content || '')
       const imgEl = document.getElementById('modalImg')
       if (article.image_url) {
         imgEl.src = article.image_url

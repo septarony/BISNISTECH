@@ -1,21 +1,16 @@
-import { defineConfig } from 'vite'
+﻿import { defineConfig } from 'vite'
 import { resolve } from 'path'
 import react from '@vitejs/plugin-react-swc'
 
-// https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react()],
-  server: {
-    port: 5173,
-    strictPort: false,
-  },
+  server: { port: 5173, strictPort: false },
   build: {
     outDir: 'dist',
     sourcemap: false,
     minify: 'esbuild',
-    esbuild: {
-      drop: ['console', 'debugger'],
-    },
+    chunkSizeWarningLimit: 700,
+    esbuild: { drop: ['console', 'debugger'] },
     rollupOptions: {
       input: {
         main: resolve(__dirname, 'index.html'),
@@ -26,12 +21,11 @@ export default defineConfig({
       },
       output: {
         manualChunks: {
-          'vendor': ['react', 'react-dom'],
+          vendor: ['react', 'react-dom'],
+          tiptap: ['@tiptap/react', '@tiptap/starter-kit', '@tiptap/extension-link', '@tiptap/extension-image'],
         },
       },
     },
   },
-  optimizeDeps: {
-    include: ['react', 'react-dom'],
-  },
+  optimizeDeps: { include: ['react', 'react-dom'] },
 })

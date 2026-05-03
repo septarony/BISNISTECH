@@ -17,3 +17,37 @@ body {
 html {
   scroll-behavior: smooth;
 }
+
+/* ── TipTap editor styles ─────────────────────────────────────────────────── */
+.tiptap p { margin-bottom: 0.75rem; }
+.tiptap p:last-child { margin-bottom: 0; }
+.tiptap h2 { font-size: 1.25rem; font-weight: 700; margin: 1.25rem 0 0.5rem; color: #f9fafb; }
+.tiptap h3 { font-size: 1.05rem; font-weight: 700; margin: 1rem 0 0.4rem; color: #f3f4f6; }
+.tiptap strong { font-weight: 700; color: #fff; }
+.tiptap em { font-style: italic; color: #e5e7eb; }
+.tiptap s { text-decoration: line-through; color: #9ca3af; }
+.tiptap a { color: #818cf8; text-decoration: underline; }
+.tiptap ul { list-style: disc; padding-left: 1.4rem; margin-bottom: 0.75rem; }
+.tiptap ol { list-style: decimal; padding-left: 1.4rem; margin-bottom: 0.75rem; }
+.tiptap li { margin-bottom: 0.2rem; }
+.tiptap img { max-width: 100%; border-radius: 0.5rem; margin: 0.75rem 0; }
+.tiptap p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  float: left;
+  color: #6b7280;
+  pointer-events: none;
+  height: 0;
+}
+
+/* ── Article modal HTML content render ───────────────────────────────────── */
+.article-html-content p  { margin-bottom: 0.85rem; }
+.article-html-content p:last-child { margin-bottom: 0; }
+.article-html-content h2 { font-family: 'Space Grotesk', sans-serif; font-size: 1.2rem; font-weight: 700; margin: 1.25rem 0 0.5rem; }
+.article-html-content h3 { font-size: 1rem; font-weight: 700; margin: 1rem 0 0.4rem; }
+.article-html-content strong { font-weight: 700; }
+.article-html-content em { font-style: italic; }
+.article-html-content a { color: #818cf8; text-decoration: underline; }
+.article-html-content ul { list-style: disc; padding-left: 1.4rem; margin-bottom: 0.85rem; }
+.article-html-content ol { list-style: decimal; padding-left: 1.4rem; margin-bottom: 0.85rem; }
+.article-html-content li { margin-bottom: 0.25rem; }
+.article-html-content img { max-width: 100%; border-radius: 0.5rem; margin: 0.75rem 0; display: block; }

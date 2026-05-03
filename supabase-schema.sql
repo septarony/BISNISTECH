@@ -55,7 +55,6 @@ CREATE POLICY "Authenticated delete"
 GRANT USAGE ON SCHEMA public TO anon, authenticated;
 GRANT SELECT ON public.articles TO anon;
 GRANT SELECT, INSERT, UPDATE, DELETE ON public.articles TO authenticated;
-GRANT USAGE, SELECT ON SEQUENCE public.articles_id_seq TO authenticated;
 
 -- ============================================================
 -- Langkah selanjutnya:
