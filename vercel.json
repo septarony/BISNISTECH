@@ -11,6 +11,8 @@
   ],
   "rewrites": [
     { "source": "/katalog/mesin-antrian", "destination": "/katalog-antrian.html" },
-    { "source": "/edukasi",              "destination": "/edukasi/index.html" }
+    { "source": "/edukasi",              "destination": "/edukasi/index.html" },
+    { "source": "/admin",               "destination": "/admin/index.html" },
+    { "source": "/admin/(.*)",          "destination": "/admin/index.html" }
   ]
 }

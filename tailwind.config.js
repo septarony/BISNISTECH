@@ -3,6 +3,7 @@ export default {
   content: [
     "./index.html",
     "./src/**/*.{js,jsx}",
+    "./simulasi/index.html",
   ],
   theme: {
     extend: {
