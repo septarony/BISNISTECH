@@ -77,8 +77,8 @@ export default function QueueSystem() {
       waiting: prev.waiting - 1,
       served: prev.served + 1,
     }));
-    // Simpan ke history (max 4 nomor terakhir, terbaru di depan)
-    setHistory((prev) => [firstNumber, ...prev].slice(0, 4));
+    // Simpan ke history (max 3 nomor terakhir, terbaru di depan)
+    setHistory((prev) => [firstNumber, ...prev].slice(0, 3));
     announceNumber(firstNumber);
   }, [queueList]);
 
@@ -97,6 +97,25 @@ export default function QueueSystem() {
       className={`min-h-screen bg-gradient-to-br from-slate-900 to-slate-800 ${isFullscreen ? 'h-screen overflow-hidden p-2 sm:p-3' : 'p-6 md:p-8'}`}
     >
       <div className={`${isFullscreen ? 'max-w-none h-full flex flex-col' : 'max-w-6xl'} mx-auto`}>
+        <div className={`flex ${isFullscreen ? 'flex-row items-center justify-between gap-2 mb-2' : 'flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-4'}`}>
+          <a
+            href="/"
+            className={`${isFullscreen ? 'text-xs px-2 py-1' : 'text-sm px-3 py-2'} inline-flex items-center gap-2 rounded-lg border border-cyan-600 bg-cyan-600/10 text-cyan-100 hover:bg-cyan-600/20 transition-colors`}
+            aria-label="Kembali ke dashboard melalui logo SEPTA"
+          >
+            <span className={`${isFullscreen ? 'text-sm' : 'text-base'} font-black tracking-wide`}>SEPTA</span>
+            <span className={`${isFullscreen ? 'hidden sm:inline text-[11px]' : 'text-xs text-cyan-200/90'}`}>Kembali ke Dashboard</span>
+          </a>
+
+          <a
+            href="/"
+            className={`${isFullscreen ? 'text-xs px-2 py-1' : 'text-sm px-3 py-2'} inline-flex items-center rounded-lg bg-white text-slate-900 font-semibold hover:bg-slate-100 transition-colors`}
+            aria-label="Tombol kembali ke dashboard"
+          >
+            ← Dashboard
+          </a>
+        </div>
+
         {/* Digital Display Monitor */}
         <DisplayMonitor
           currentNumber={currentNumber}
