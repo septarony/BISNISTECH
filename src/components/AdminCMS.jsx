@@ -4,6 +4,7 @@ import { supabase, isSupabaseConfigured, missingSupabaseVars } from '../supabase
 // ─── Konstanta ────────────────────────────────────────────────────────────────
 const CATEGORIES = ['Mesin Antrian', 'Security System', 'PPOB', 'Tips Umum']
 const ADMIN_EMAIL = (import.meta.env.VITE_ADMIN_EMAIL || '').trim().toLowerCase()
+const MAX_IMAGE_SIZE_BYTES = 2 * 1024 * 1024
 
 const EMPTY_FORM = { title: '', content: '', category: CATEGORIES[0], image_url: '' }
 
@@ -174,13 +175,14 @@ function Dashboard({ session }) {
   const [deleteId, setDeleteId]   = useState(null)
   const [toast, setToast]         = useState(null)   // { type: 'success'|'error', msg }
   const [saving, setSaving]       = useState(false)
+  const [uploadingImage, setUploadingImage] = useState(false)
 
   // ── Fetch ──────────────────────────────────────────────────────────────────
   const fetchArticles = useCallback(async () => {
     setLoading(true)
     const { data, error } = await supabase
       .from('articles')
-      .select('id, title, category, image_url, created_at')
+      .select('id, title, content, category, image_url, created_at')
       .order('created_at', { ascending: false })
 
     if (error) showToast('error', error.message)
@@ -205,16 +207,51 @@ function Dashboard({ session }) {
 
   // ── Buka form edit ─────────────────────────────────────────────────────────
   async function openEdit(id) {
-    const { data, error } = await supabase
-      .from('articles')
-      .select('*')
-      .eq('id', id)
-      .single()
+    const data = articles.find(article => article.id === id)
+    if (!data) {
+      showToast('error', 'Data artikel tidak ditemukan. Silakan refresh halaman.')
+      return
+    }
 
-    if (error) return showToast('error', error.message)
     setEditId(id)
     setForm({ title: data.title, content: data.content, category: data.category, image_url: data.image_url || '' })
     setFormOpen(true)
+  }
+
+  async function handleImageUpload(e) {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    if (!file.type.startsWith('image/')) {
+      showToast('error', 'File harus berupa gambar.')
+      e.target.value = ''
+      return
+    }
+
+    if (file.size > MAX_IMAGE_SIZE_BYTES) {
+      showToast('error', 'Ukuran gambar maksimal 2 MB.')
+      e.target.value = ''
+      return
+    }
+
+    setUploadingImage(true)
+
+    try {
+      const imageUrl = await new Promise((resolve, reject) => {
+        const reader = new FileReader()
+        reader.onload = () => resolve(String(reader.result || ''))
+        reader.onerror = () => reject(new Error('Gagal membaca file gambar.'))
+        reader.readAsDataURL(file)
+      })
+
+      setForm(current => ({ ...current, image_url: imageUrl }))
+      showToast('success', 'Gambar berhasil dimuat ke artikel.')
+    } catch (error) {
+      showToast('error', error.message || 'Gagal memproses gambar.')
+    } finally {
+      setUploadingImage(false)
+      e.target.value = ''
+    }
   }
 
   // ── Submit form (create / update) ──────────────────────────────────────────
@@ -233,28 +270,54 @@ function Dashboard({ session }) {
       image_url: form.image_url.trim() || null,
     }
 
+    let data
     let error
     if (editId) {
-      ;({ error } = await supabase.from('articles').update(payload).eq('id', editId))
+      ;({ data, error } = await supabase
+        .from('articles')
+        .update(payload)
+        .eq('id', editId)
+        .select('id, title, content, category, image_url, created_at')
+        .single())
     } else {
-      ;({ error } = await supabase.from('articles').insert(payload))
+      ;({ data, error } = await supabase
+        .from('articles')
+        .insert(payload)
+        .select('id, title, content, category, image_url, created_at')
+        .single())
     }
 
     setSaving(false)
     if (error) return showToast('error', error.message)
 
+    if (editId) {
+      setArticles(current => current.map(article => article.id === editId ? data : article))
+    } else {
+      setArticles(current => [data, ...current])
+    }
+
     showToast('success', editId ? 'Artikel berhasil diperbarui.' : 'Artikel berhasil ditambahkan.')
     setFormOpen(false)
-    fetchArticles()
+    setEditId(null)
+    setForm(EMPTY_FORM)
   }
 
   // ── Delete ─────────────────────────────────────────────────────────────────
   async function handleDelete() {
-    const { error } = await supabase.from('articles').delete().eq('id', deleteId)
+    const currentDeleteId = deleteId
+    const { data, error } = await supabase
+      .from('articles')
+      .delete()
+      .eq('id', currentDeleteId)
+      .select('id')
+      .maybeSingle()
+
     setDeleteId(null)
     if (error) return showToast('error', error.message)
+    if (!data) return showToast('error', 'Artikel gagal dihapus atau sudah tidak tersedia.')
+
+    setArticles(current => current.filter(article => article.id !== currentDeleteId))
     showToast('success', 'Artikel berhasil dihapus.')
-    fetchArticles()
   }
 
   // ── Logout ─────────────────────────────────────────────────────────────────
@@ -346,12 +409,14 @@ function Dashboard({ session }) {
                       <td className="px-5 py-4 text-right">
                         <div className="flex items-center justify-end gap-2">
                           <button
+                            type="button"
                             onClick={() => openEdit(a.id)}
                             className="text-xs text-indigo-400 hover:text-indigo-300 border border-indigo-800 hover:border-indigo-600 rounded-lg px-3 py-1.5 transition"
                           >
                             Edit
                           </button>
                           <button
+                            type="button"
                             onClick={() => setDeleteId(a.id)}
                             className="text-xs text-red-400 hover:text-red-300 border border-red-900 hover:border-red-700 rounded-lg px-3 py-1.5 transition"
                           >
@@ -413,6 +478,39 @@ function Dashboard({ session }) {
                   placeholder="https://example.com/gambar.jpg"
                   className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3.5 py-2.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition"
                 />
+                <p className="text-[11px] text-gray-500 mt-1.5">Bisa isi URL eksternal, atau pilih file gambar langsung dari komputer di bawah.</p>
+              </div>
+
+              {/* Upload Gambar */}
+              <div>
+                <label className="block text-xs font-medium text-gray-400 mb-1.5">Upload Gambar Langsung</label>
+                <label className="flex items-center justify-center w-full min-h-28 border border-dashed border-gray-700 rounded-xl bg-gray-800/50 px-4 py-5 text-center cursor-pointer hover:border-indigo-500 transition">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageUpload}
+                    className="hidden"
+                  />
+                  <div>
+                    <p className="text-sm font-medium text-gray-200">{uploadingImage ? 'Memproses gambar...' : 'Klik untuk pilih gambar'}</p>
+                    <p className="text-xs text-gray-500 mt-1">Format bebas, maksimal 2 MB. Gambar akan langsung disimpan bersama artikel.</p>
+                  </div>
+                </label>
+                {form.image_url && (
+                  <div className="mt-3 rounded-xl overflow-hidden border border-gray-800 bg-gray-950">
+                    <img src={form.image_url} alt="Preview artikel" className="w-full max-h-56 object-cover" />
+                    <div className="flex items-center justify-between gap-3 px-3 py-2 border-t border-gray-800">
+                      <span className="text-[11px] text-gray-500 truncate">Preview gambar artikel</span>
+                      <button
+                        type="button"
+                        onClick={() => setForm(current => ({ ...current, image_url: '' }))}
+                        className="text-xs text-red-400 hover:text-red-300"
+                      >
+                        Hapus gambar
+                      </button>
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* Isi Artikel */}
@@ -459,12 +557,14 @@ function Dashboard({ session }) {
             <p className="text-gray-400 text-sm mb-6">Tindakan ini tidak dapat dibatalkan. Artikel akan dihapus permanen dari database.</p>
             <div className="flex gap-3">
               <button
+                type="button"
                 onClick={handleDelete}
                 className="flex-1 bg-red-700 hover:bg-red-600 text-white font-semibold rounded-lg py-2.5 text-sm transition"
               >
                 Ya, Hapus
               </button>
               <button
+                type="button"
                 onClick={() => setDeleteId(null)}
                 className="flex-1 bg-gray-800 hover:bg-gray-700 text-gray-300 font-semibold rounded-lg py-2.5 text-sm transition"
               >
