@@ -628,8 +628,8 @@
     function attachArticleEvents() {
       document.querySelectorAll('.article-card').forEach(card => {
         card.addEventListener('click', () => {
-          const id = Number(card.dataset.id)
-          if (Number.isFinite(id)) openArticle(id)
+          const id = card.dataset.id
+          if (id) openArticle(id)
         })
       })
     }
