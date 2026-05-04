@@ -157,17 +157,13 @@ window.addEventListener('load', () => {
 
 // ===== DYNAMIC META TAGS PER SECTION =====
 const sectionMeta = {
-  hero: {
+  home: {
     title: 'SEPTA – Mesin Antrian, Security System & PPOB',
     description: 'SEPTA – Solusi teknologi terpercaya: mesin antrian digital, security system, dan layanan PPOB terlengkap. Hubungi kami sekarang!'
   },
-  'mesin-antrian': {
+  antrian: {
     title: 'Mesin Antrian Digital – SEPTA',
     description: 'Sistem antrian digital SEPTA: touch screen, thermal printer, koneksi jaringan. Cocok untuk bank, rumah sakit, dan instansi pemerintah.'
-  },
-  security: {
-    title: 'Security System – SEPTA | Autogate, Smartlock, Palang Parkir',
-    description: 'Solusi keamanan SEPTA: autogate, smartlock, palang parkir, CCTV, dan access control terpercaya untuk gedung dan kawasan perumahan.'
   },
   ppob: {
     title: 'PPOB – SEPTA | Pembayaran Tagihan & Top Up Digital',

@@ -70,3 +70,70 @@ Estimated reduction for icon-related first-load assets:
 - Root cause: `katalog-antrian.html` was not included in Vite `rollupOptions.input`
 - Fix: add `katalog: resolve(__dirname, 'katalog-antrian.html')` in build input
 - Validation: local build now outputs `dist/katalog-antrian.html`
+
+---
+
+# Progress Report - Sitemap & Code Cleanup
+
+Date: 2026-05-04
+
+## Current Status
+- [x] Sitemap.xml diperbarui sesuai halaman yang benar-benar ada
+- [x] Dead CSS dihapus dari style.css
+- [x] Bug sectionMeta keys di script.js diperbaiki
+- [x] Komentar developer tidak perlu dihapus dari index.html
+
+---
+
+## Sitemap Update
+
+Kedua file sitemap (`sitemap.xml` dan `public/sitemap.xml`) diperbarui:
+
+| URL | Priority | Keterangan |
+|-----|----------|------------|
+| `/` | 1.0 | Halaman utama |
+| `/katalog/mesin-antrian` | 0.9 | katalog-antrian.html via rewrite |
+| `/edukasi` | 0.8 | edukasi/index.html |
+| `/simulasi` | 0.7 | simulasi/index.html |
+| `/layanan/mesin-antrian` | 0.8 | Anchor redirect ke homepage |
+| `/layanan/security` | 0.8 | Anchor redirect ke homepage |
+| `/layanan/ppob` | 0.7 | Anchor redirect ke homepage |
+| `/layanan/kontak` | 0.7 | Anchor redirect ke homepage |
+
+Halaman `/admin` tidak diikutkan agar tidak terindeks mesin pencari.
+`lastmod` diperbarui ke `2026-05-04`.
+
+---
+
+## Code Cleanup
+
+### style.css — Hapus ~50 baris CSS tidak terpakai
+
+**Dead CSS dihapus:**
+- `.name-grid`, `.name-card`, `.name-card:hover`, `.name-card.active-name`
+- `.name-label`, `.name-card h3`, `.name-card p`, `.name-note`
+- `.product-dev-notice`, `.dev-icon`, `.soon-badge`, `.coming-price`
+- Responsive rule `.product-dev-notice` di `@media (max-width: 640px)`
+
+Tidak ada elemen HTML di halaman manapun yang menggunakan class-class tersebut.
+
+### script.js — Perbaiki `sectionMeta` keys
+
+| Sebelum | Sesudah | Alasan |
+|---------|---------|--------|
+| `hero` | `home` | Section ID di HTML adalah `id="home"` |
+| `'mesin-antrian'` | `antrian` | Section ID di HTML adalah `id="antrian"` |
+| `security` | *(dihapus)* | Tidak ada `<section id="security">`, hanya div tersembunyi |
+
+Bug ini menyebabkan dynamic meta tag tidak pernah aktif untuk section home dan antrian.
+
+### index.html — 2 pembersihan minor
+
+- Hapus class `antrian-cards-grid` dari div (tidak ada CSS-nya, class mubazir)
+- Hapus komentar developer `<!-- UPDATE: Ganti src ... -->` di dalam iframe peta
+
+---
+
+## File Tidak Terpakai Teridentifikasi
+
+- `index-vite.html` — entry point React lama, tidak dirujuk oleh vercel.json, vite.config.js, maupun halaman manapun. **Dihapus (2026-05-04).**
