@@ -110,6 +110,14 @@ function RichToolbar({ editor }) {
   )
 }
 
+// ─── Nav config ──────────────────────────────────────────────────────────────
+const NAV_ITEMS = [
+  { id: 'dashboard',  label: 'Dashboard',          icon: '🏠' },
+  { id: 'cms',        label: 'Manajemen Konten',    icon: '📝' },
+  { id: 'keuangan',   label: 'Keuangan & PPOB',     icon: '💰' },
+  { id: 'settings',   label: 'Pengaturan Sistem',   icon: '⚙️' },
+]
+
 // ─── Komponen utama ───────────────────────────────────────────────────────────
 export default function AdminCMS() {
   const [session, setSession]       = useState(null)
@@ -267,15 +275,533 @@ function LoginPage() {
   )
 }
 
-// ─── Dashboard ────────────────────────────────────────────────────────────────
+// ─── Dashboard (shell with sidebar navigation) ───────────────────────────────
 function Dashboard({ session }) {
+  const [activeMenu, setActiveMenu] = useState('dashboard')
+  const [sidebarOpen, setSidebarOpen] = useState(false)
+
+  // shared article state — lifted so CMS section can use it
   const [articles, setArticles]   = useState([])
-  const [loading, setLoading]     = useState(true)
+  const [articlesLoading, setArticlesLoading] = useState(true)
+
+  const fetchArticles = useCallback(async () => {
+    setArticlesLoading(true)
+    const { data, error } = await supabase
+      .from('articles')
+      .select('id, title, content, category, image_url, created_at')
+      .order('created_at', { ascending: false })
+    if (!error) setArticles(data || [])
+    setArticlesLoading(false)
+  }, [])
+
+  useEffect(() => { fetchArticles() }, [fetchArticles])
+
+  async function handleLogout() { await supabase.auth.signOut() }
+
+  const navLabel = NAV_ITEMS.find(n => n.id === activeMenu)?.label || ''
+
+  return (
+    <div className="min-h-screen bg-gray-950 text-gray-100 flex">
+
+      {/* ── Sidebar overlay (mobile) ── */}
+      {sidebarOpen && (
+        <div className="fixed inset-0 z-40 bg-black/60 lg:hidden" onClick={() => setSidebarOpen(false)} />
+      )}
+
+      {/* ── Sidebar ── */}
+      <aside className={`fixed top-0 left-0 h-full z-50 w-64 bg-gray-900 border-r border-gray-800 flex flex-col transition-transform duration-200
+        ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0 lg:static lg:z-auto lg:flex`}>
+        {/* Brand */}
+        <div className="flex items-center gap-2.5 px-5 py-4 border-b border-gray-800">
+          <div className="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center text-white font-bold text-sm flex-shrink-0">S</div>
+          <div>
+            <div className="font-bold text-sm text-white leading-tight">SEPTA Admin</div>
+            <div className="text-[11px] text-gray-500 truncate max-w-[140px]">{session.user.email}</div>
+          </div>
+        </div>
+        {/* Nav */}
+        <nav className="flex-1 overflow-y-auto py-3 px-2 space-y-0.5">
+          {NAV_ITEMS.map(item => (
+            <button
+              key={item.id}
+              onClick={() => { setActiveMenu(item.id); setSidebarOpen(false) }}
+              className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition text-left
+                ${activeMenu === item.id
+                  ? 'bg-indigo-600 text-white'
+                  : 'text-gray-400 hover:bg-gray-800 hover:text-white'}`}
+            >
+              <span className="text-base w-5 text-center">{item.icon}</span>
+              {item.label}
+            </button>
+          ))}
+        </nav>
+        {/* Logout */}
+        <div className="px-3 py-3 border-t border-gray-800">
+          <button
+            onClick={handleLogout}
+            className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-gray-400 hover:bg-red-900/40 hover:text-red-300 transition text-left"
+          >
+            <span className="text-base w-5 text-center">🚪</span> Keluar
+          </button>
+        </div>
+      </aside>
+
+      {/* ── Main content ── */}
+      <div className="flex-1 flex flex-col min-w-0">
+        {/* Topbar */}
+        <header className="sticky top-0 z-30 bg-gray-900/80 backdrop-blur border-b border-gray-800 px-4 sm:px-6 py-3 flex items-center gap-3">
+          {/* Hamburger (mobile) */}
+          <button
+            className="lg:hidden text-gray-400 hover:text-white p-1 rounded-lg"
+            onClick={() => setSidebarOpen(v => !v)}
+            aria-label="Buka menu"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          </button>
+          <h1 className="font-semibold text-sm flex-1">{navLabel}</h1>
+        </header>
+
+        {/* Section content */}
+        <main className="flex-1 overflow-y-auto">
+          {activeMenu === 'dashboard' && <SectionDashboard articles={articles} articlesLoading={articlesLoading} />}
+          {activeMenu === 'cms'       && <SectionCMS articles={articles} articlesLoading={articlesLoading} fetchArticles={fetchArticles} />}
+          {activeMenu === 'keuangan'  && <SectionKeuangan />}
+          {activeMenu === 'settings'  && <SectionSettings session={session} />}
+        </main>
+      </div>
+    </div>
+  )
+}
+
+// ─── Section: Dashboard Utama ─────────────────────────────────────────────────
+function SectionDashboard({ articles, articlesLoading }) {
+  const totalArticles = articles.length
+  const latestArticle = articles[0]
+
+  const stats = [
+    { label: 'Total Artikel', value: articlesLoading ? '...' : totalArticles, icon: '📄', color: 'indigo' },
+    { label: 'Pengunjung Bulan Ini', value: '—', icon: '👥', color: 'cyan', note: 'Pasang analytics untuk data ini' },
+    { label: 'Transaksi PPOB', value: '—', icon: '⚡', color: 'amber', note: 'Integrasi gateway diperlukan' },
+    { label: 'Pendapatan Bulan Ini', value: '—', icon: '💵', color: 'emerald', note: 'Hubungkan ke laporan keuangan' },
+  ]
+
+  const notifications = [
+    { type: 'info',    msg: 'Konfigurasi variabel lingkungan Supabase sudah aktif.' },
+    { type: 'warning', msg: 'Belum ada integrasi payment gateway. Konfigurasikan di menu Pengaturan.' },
+    { type: 'warning', msg: 'WhatsApp CRM belum terhubung. Tambahkan API key di Pengaturan.' },
+    { type: 'success', msg: latestArticle ? `Artikel terbaru: "${latestArticle.title}"` : 'Belum ada artikel. Buat artikel pertama di menu CMS.' },
+  ]
+
+  const colorMap = {
+    indigo:  { card: 'border-indigo-800/60 bg-indigo-950/40', icon: 'bg-indigo-700/40 text-indigo-300', val: 'text-indigo-200' },
+    cyan:    { card: 'border-cyan-800/60 bg-cyan-950/40',     icon: 'bg-cyan-700/40 text-cyan-300',     val: 'text-cyan-200' },
+    amber:   { card: 'border-amber-800/60 bg-amber-950/40',   icon: 'bg-amber-700/40 text-amber-300',   val: 'text-amber-200' },
+    emerald: { card: 'border-emerald-800/60 bg-emerald-950/40', icon: 'bg-emerald-700/40 text-emerald-300', val: 'text-emerald-200' },
+  }
+
+  return (
+    <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8 space-y-8">
+      <div>
+        <h2 className="text-lg font-bold mb-1">Ringkasan Statistik</h2>
+        <p className="text-gray-400 text-sm">Gambaran operasional bisnis saat ini.</p>
+      </div>
+
+      {/* Stat cards */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        {stats.map(s => {
+          const c = colorMap[s.color]
+          return (
+            <div key={s.label} className={`border rounded-2xl p-4 ${c.card}`}>
+              <div className={`w-9 h-9 rounded-xl flex items-center justify-center text-lg mb-3 ${c.icon}`}>{s.icon}</div>
+              <div className={`text-2xl font-bold mb-0.5 ${c.val}`}>{s.value}</div>
+              <div className="text-xs font-medium text-gray-300">{s.label}</div>
+              {s.note && <div className="text-[10px] text-gray-500 mt-1 leading-tight">{s.note}</div>}
+            </div>
+          )
+        })}
+      </div>
+
+      {/* Notifications */}
+      <div>
+        <h2 className="text-base font-bold mb-3">Notifikasi Penting</h2>
+        <div className="space-y-2.5">
+          {notifications.map((n, i) => {
+            const styles = {
+              info:    'bg-blue-950/50 border-blue-800/60 text-blue-200',
+              warning: 'bg-amber-950/50 border-amber-800/60 text-amber-200',
+              success: 'bg-emerald-950/50 border-emerald-800/60 text-emerald-200',
+            }
+            const icons = { info: 'ℹ️', warning: '⚠️', success: '✅' }
+            return (
+              <div key={i} className={`flex items-start gap-3 border rounded-xl px-4 py-3 text-sm ${styles[n.type]}`}>
+                <span className="flex-shrink-0 mt-0.5">{icons[n.type]}</span>
+                <span>{n.msg}</span>
+              </div>
+            )
+          })}
+        </div>
+      </div>
+
+      {/* Recent articles mini-table */}
+      <div>
+        <h2 className="text-base font-bold mb-3">Artikel Terbaru</h2>
+        <div className="bg-gray-900 border border-gray-800 rounded-2xl overflow-hidden">
+          {articlesLoading ? (
+            <div className="flex items-center justify-center h-24">
+              <div className="w-5 h-5 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin" />
+            </div>
+          ) : articles.length === 0 ? (
+            <p className="text-center text-gray-500 text-sm py-8">Belum ada artikel.</p>
+          ) : (
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-gray-800 text-gray-400 text-xs uppercase tracking-wider">
+                  <th className="text-left px-5 py-3 font-medium">Judul</th>
+                  <th className="text-left px-5 py-3 font-medium hidden sm:table-cell">Kategori</th>
+                  <th className="text-left px-5 py-3 font-medium hidden md:table-cell">Tanggal</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-800">
+                {articles.slice(0, 5).map(a => (
+                  <tr key={a.id} className="hover:bg-gray-800/40 transition">
+                    <td className="px-5 py-3 font-medium text-white line-clamp-1 max-w-xs">{a.title}</td>
+                    <td className="px-5 py-3 text-gray-400 hidden sm:table-cell">{a.category}</td>
+                    <td className="px-5 py-3 text-gray-400 hidden md:table-cell">
+                      {new Date(a.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// ─── Section: Manajemen Konten (CMS) ─────────────────────────────────────────
+function SectionCMS({ articles, articlesLoading, fetchArticles }) {
+  const [cmsTab, setCmsTab] = useState('artikel') // 'artikel' | 'media'
+
+  return (
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
+      {/* Tab bar */}
+      <div className="flex gap-2 mb-6 border-b border-gray-800">
+        {[{ id: 'artikel', label: '📄 Editor Artikel' }, { id: 'media', label: '🖼️ Media Library' }].map(t => (
+          <button
+            key={t.id}
+            onClick={() => setCmsTab(t.id)}
+            className={`px-4 py-2.5 text-sm font-medium border-b-2 -mb-px transition ${
+              cmsTab === t.id ? 'border-indigo-500 text-white' : 'border-transparent text-gray-400 hover:text-white'
+            }`}
+          >
+            {t.label}
+          </button>
+        ))}
+      </div>
+
+      {cmsTab === 'artikel' && (
+        <ArticleManager articles={articles} loading={articlesLoading} fetchArticles={fetchArticles} />
+      )}
+      {cmsTab === 'media' && (
+        <MediaLibrary articles={articles} />
+      )}
+    </div>
+  )
+}
+
+// ─── Media Library ────────────────────────────────────────────────────────────
+function MediaLibrary({ articles }) {
+  // Extract all image_url from articles as a simple media library
+  const images = articles
+    .filter(a => a.image_url && a.image_url.trim())
+    .map(a => ({ src: a.image_url, title: a.title, id: a.id }))
+
+  return (
+    <div>
+      <div className="flex items-center justify-between mb-4">
+        <div>
+          <h2 className="text-base font-bold">Media Library</h2>
+          <p className="text-gray-400 text-sm mt-0.5">
+            {images.length} aset visual dari artikel. Gambar dikelola langsung via editor artikel.
+          </p>
+        </div>
+      </div>
+
+      {images.length === 0 ? (
+        <div className="flex flex-col items-center justify-center h-48 border border-dashed border-gray-700 rounded-2xl text-gray-500 text-sm">
+          <span className="text-3xl mb-2">🖼️</span>
+          <p>Belum ada gambar tersimpan.</p>
+          <p className="text-xs text-gray-600 mt-1">Upload gambar melalui editor artikel di tab "Editor Artikel".</p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+          {images.map((img, i) => (
+            <div key={`${img.id}-${i}`} className="group relative bg-gray-900 border border-gray-800 rounded-xl overflow-hidden">
+              <img
+                src={img.src}
+                alt={img.title}
+                className="w-full aspect-square object-cover"
+                loading="lazy"
+              />
+              <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition flex flex-col items-center justify-center gap-1 p-2">
+                <p className="text-white text-[11px] text-center leading-tight line-clamp-3">{img.title}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      <div className="mt-4 bg-gray-900/60 border border-gray-800 rounded-xl px-4 py-3 text-xs text-gray-400">
+        <strong className="text-gray-300">Tips optimasi:</strong> Kompres gambar di bawah 2 MB sebelum upload. Gunakan format WebP untuk performa terbaik. Gambar disimpan sebagai Base64 bersama konten artikel.
+      </div>
+    </div>
+  )
+}
+
+// ─── Section: Keuangan & PPOB ─────────────────────────────────────────────────
+const MOCK_TRANSACTIONS = [
+  { id: 'TRX-001', date: '2026-05-04', type: 'Pulsa', product: 'Pulsa 50.000 – Telkomsel', customer: '0812-xxxx-3421', amount: 51500, margin: 1500, status: 'Sukses' },
+  { id: 'TRX-002', date: '2026-05-04', type: 'Token Listrik', product: 'Token PLN 100.000', customer: '08xx-xxxx-7812', amount: 101500, margin: 1500, status: 'Sukses' },
+  { id: 'TRX-003', date: '2026-05-03', type: 'Pulsa', product: 'Pulsa 20.000 – Indosat', customer: '0856-xxxx-0034', amount: 21000, margin: 1000, status: 'Sukses' },
+  { id: 'TRX-004', date: '2026-05-03', type: 'BPJS', product: 'BPJS Kesehatan 1 Bulan', customer: '0878-xxxx-5510', amount: 42500, margin: 2500, status: 'Pending' },
+  { id: 'TRX-005', date: '2026-05-02', type: 'Token Listrik', product: 'Token PLN 200.000', customer: '0813-xxxx-9921', amount: 202000, margin: 2000, status: 'Sukses' },
+  { id: 'TRX-006', date: '2026-05-01', type: 'Pulsa', product: 'Pulsa 100.000 – Telkomsel', customer: '0812-xxxx-4400', amount: 102000, margin: 2000, status: 'Gagal' },
+]
+
+function SectionKeuangan() {
+  const [keuTab, setKeuTab] = useState('log') // 'log' | 'laporan'
+
+  const sukses    = MOCK_TRANSACTIONS.filter(t => t.status === 'Sukses')
+  const totalRev  = sukses.reduce((a, t) => a + t.amount, 0)
+  const totalMargin = sukses.reduce((a, t) => a + t.margin, 0)
+  const totalCost = totalRev - totalMargin
+
+  const fmt = (n) => 'Rp ' + n.toLocaleString('id-ID')
+
+  const statusBadge = {
+    Sukses:  'bg-emerald-900/50 text-emerald-300 border-emerald-800',
+    Pending: 'bg-amber-900/50 text-amber-300 border-amber-800',
+    Gagal:   'bg-red-900/50 text-red-300 border-red-800',
+  }
+
+  return (
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
+      <div className="mb-4 bg-amber-950/40 border border-amber-800/60 rounded-xl px-4 py-3 text-xs text-amber-300">
+        ⚠️ Data transaksi di bawah adalah contoh statis (mock data). Hubungkan ke API payment gateway WISEP untuk data real-time.
+      </div>
+
+      {/* Tab bar */}
+      <div className="flex gap-2 mb-6 border-b border-gray-800">
+        {[{ id: 'log', label: '📋 Log Transaksi WISEP' }, { id: 'laporan', label: '📊 Laporan Laba/Rugi' }].map(t => (
+          <button key={t.id} onClick={() => setKeuTab(t.id)}
+            className={`px-4 py-2.5 text-sm font-medium border-b-2 -mb-px transition ${keuTab === t.id ? 'border-indigo-500 text-white' : 'border-transparent text-gray-400 hover:text-white'}`}>
+            {t.label}
+          </button>
+        ))}
+      </div>
+
+      {keuTab === 'log' && (
+        <div>
+          <div className="flex items-center justify-between mb-4">
+            <p className="text-gray-400 text-sm">{MOCK_TRANSACTIONS.length} transaksi tercatat</p>
+          </div>
+          <div className="bg-gray-900 border border-gray-800 rounded-2xl overflow-hidden overflow-x-auto">
+            <table className="w-full text-sm min-w-[640px]">
+              <thead>
+                <tr className="border-b border-gray-800 text-gray-400 text-xs uppercase tracking-wider">
+                  {['ID', 'Tanggal', 'Jenis', 'Produk', 'Pelanggan', 'Nominal', 'Status'].map(h => (
+                    <th key={h} className="text-left px-4 py-3 font-medium">{h}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-800">
+                {MOCK_TRANSACTIONS.map(t => (
+                  <tr key={t.id} className="hover:bg-gray-800/40 transition">
+                    <td className="px-4 py-3 font-mono text-xs text-gray-400">{t.id}</td>
+                    <td className="px-4 py-3 text-gray-300">{t.date}</td>
+                    <td className="px-4 py-3 text-gray-300">{t.type}</td>
+                    <td className="px-4 py-3 text-white">{t.product}</td>
+                    <td className="px-4 py-3 text-gray-400 font-mono text-xs">{t.customer}</td>
+                    <td className="px-4 py-3 text-white font-medium">{fmt(t.amount)}</td>
+                    <td className="px-4 py-3">
+                      <span className={`text-xs font-semibold px-2.5 py-1 rounded-full border ${statusBadge[t.status]}`}>{t.status}</span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
+      {keuTab === 'laporan' && (
+        <div className="space-y-6">
+          {/* Summary cards */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            {[
+              { label: 'Total Pendapatan (Bruto)', val: fmt(totalRev), color: 'indigo', icon: '💵' },
+              { label: 'Total Modal / HPP', val: fmt(totalCost), color: 'gray', icon: '📦' },
+              { label: 'Total Margin Keuntungan', val: fmt(totalMargin), color: 'emerald', icon: '📈' },
+            ].map(c => (
+              <div key={c.label} className={`border rounded-2xl p-5 ${c.color === 'emerald' ? 'border-emerald-800/60 bg-emerald-950/40' : c.color === 'indigo' ? 'border-indigo-800/60 bg-indigo-950/40' : 'border-gray-700 bg-gray-900'}`}>
+                <div className="text-xl mb-2">{c.icon}</div>
+                <div className={`text-xl font-bold mb-0.5 ${c.color === 'emerald' ? 'text-emerald-300' : c.color === 'indigo' ? 'text-indigo-300' : 'text-gray-200'}`}>{c.val}</div>
+                <div className="text-xs text-gray-400">{c.label}</div>
+              </div>
+            ))}
+          </div>
+
+          {/* Breakdown per type */}
+          <div>
+            <h3 className="text-sm font-semibold text-gray-300 mb-3">Rincian per Jenis Layanan</h3>
+            <div className="bg-gray-900 border border-gray-800 rounded-2xl overflow-hidden">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-gray-800 text-gray-400 text-xs uppercase tracking-wider">
+                    <th className="text-left px-5 py-3 font-medium">Jenis</th>
+                    <th className="text-left px-5 py-3 font-medium">Transaksi Sukses</th>
+                    <th className="text-left px-5 py-3 font-medium">Pendapatan</th>
+                    <th className="text-left px-5 py-3 font-medium">Margin</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-800">
+                  {['Pulsa', 'Token Listrik', 'BPJS'].map(type => {
+                    const rows = sukses.filter(t => t.type === type)
+                    const rev = rows.reduce((a, t) => a + t.amount, 0)
+                    const mar = rows.reduce((a, t) => a + t.margin, 0)
+                    return (
+                      <tr key={type} className="hover:bg-gray-800/40 transition">
+                        <td className="px-5 py-3 font-medium text-white">{type}</td>
+                        <td className="px-5 py-3 text-gray-300">{rows.length} transaksi</td>
+                        <td className="px-5 py-3 text-white">{fmt(rev)}</td>
+                        <td className="px-5 py-3 text-emerald-300 font-medium">{fmt(mar)}</td>
+                      </tr>
+                    )
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <p className="text-xs text-gray-600">* Data diatas adalah contoh. Laporan final akan tersedia setelah integrasi payment gateway aktif.</p>
+        </div>
+      )}
+    </div>
+  )
+}
+
+// ─── Section: Pengaturan Sistem ───────────────────────────────────────────────
+function SectionSettings({ session }) {
+  const [saved, setSaved] = useState(false)
+
+  function handleSave(e) {
+    e.preventDefault()
+    setSaved(true)
+    setTimeout(() => setSaved(false), 2500)
+  }
+
+  const inputCls = "w-full bg-gray-800 border border-gray-700 rounded-lg px-3.5 py-2.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition"
+  const labelCls = "block text-xs font-medium text-gray-400 mb-1.5"
+
+  return (
+    <div className="max-w-3xl mx-auto px-4 sm:px-6 py-8 space-y-8">
+
+      {/* ── Konfigurasi PWA & Vercel ── */}
+      <section>
+        <h2 className="text-base font-bold mb-1">Konfigurasi PWA & Vercel</h2>
+        <p className="text-gray-400 text-sm mb-4">Pengaturan teknis deployment dan integrasi layanan eksternal.</p>
+        <form onSubmit={handleSave} className="bg-gray-900 border border-gray-800 rounded-2xl p-5 space-y-4">
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label className={labelCls}>Supabase URL</label>
+              <input type="url" placeholder="https://xxxx.supabase.co" className={inputCls} defaultValue={import.meta.env.VITE_SUPABASE_URL || ''} readOnly />
+              <p className="text-[11px] text-gray-500 mt-1">Dari environment variable VITE_SUPABASE_URL.</p>
+            </div>
+            <div>
+              <label className={labelCls}>Supabase Anon Key</label>
+              <input type="password" placeholder="••••••••••••••••" className={inputCls} defaultValue={import.meta.env.VITE_SUPABASE_ANON_KEY ? '••••••••••••' : ''} readOnly />
+              <p className="text-[11px] text-gray-500 mt-1">Dari environment variable VITE_SUPABASE_ANON_KEY.</p>
+            </div>
+          </div>
+
+          <div>
+            <label className={labelCls}>API Key Payment Gateway (WISEP / PPOB)</label>
+            <input type="password" placeholder="Masukkan API key..." className={inputCls} />
+            <p className="text-[11px] text-gray-500 mt-1">Simpan via Vercel Environment Variables, bukan di kode sumber.</p>
+          </div>
+
+          <div>
+            <label className={labelCls}>WhatsApp CRM – API Key / Token</label>
+            <input type="password" placeholder="Token WhatsApp Business API..." className={inputCls} />
+            <p className="text-[11px] text-gray-500 mt-1">Gunakan WhatsApp Cloud API atau penyedia pihak ketiga (Fonnte, Wablas, dll).</p>
+          </div>
+
+          <div>
+            <label className={labelCls}>Nomor WhatsApp Bisnis</label>
+            <input type="tel" placeholder="628xxxxxxxxxx" className={inputCls} />
+          </div>
+
+          <div className="bg-amber-950/40 border border-amber-800/50 rounded-xl px-4 py-3 text-xs text-amber-300">
+            ⚠️ Pengaturan di form ini bersifat referensi. Semua API key dan secret harus disimpan sebagai <strong>Environment Variables di Vercel</strong>, bukan di dalam database atau kode sumber.
+          </div>
+
+          <div className="flex items-center gap-3">
+            <button type="submit" className="bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-sm rounded-xl px-5 py-2.5 transition">
+              Simpan Catatan
+            </button>
+            {saved && <span className="text-emerald-400 text-sm">✅ Tersimpan</span>}
+          </div>
+        </form>
+      </section>
+
+      {/* ── Manajemen User Admin ── */}
+      <section>
+        <h2 className="text-base font-bold mb-1">Manajemen User Admin</h2>
+        <p className="text-gray-400 text-sm mb-4">Daftar akun yang memiliki akses ke panel admin ini.</p>
+
+        <div className="bg-gray-900 border border-gray-800 rounded-2xl overflow-hidden">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-gray-800 text-gray-400 text-xs uppercase tracking-wider">
+                <th className="text-left px-5 py-3 font-medium">Email</th>
+                <th className="text-left px-5 py-3 font-medium">Role</th>
+                <th className="text-left px-5 py-3 font-medium">Status</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-800">
+              <tr className="hover:bg-gray-800/40 transition">
+                <td className="px-5 py-3 font-medium text-white">{session.user.email}</td>
+                <td className="px-5 py-3">
+                  <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-indigo-900/60 text-indigo-300 border border-indigo-800">Super Admin</span>
+                </td>
+                <td className="px-5 py-3">
+                  <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-emerald-900/60 text-emerald-300 border border-emerald-800">Aktif</span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div className="mt-3 bg-gray-900/60 border border-gray-800 rounded-xl px-4 py-3 text-xs text-gray-400">
+          Untuk menambah admin baru, buat user baru di <strong className="text-gray-300">Supabase Authentication</strong> dan tambahkan email-nya ke environment variable <span className="font-mono">VITE_ADMIN_EMAIL</span>. Multi-admin (role-based) dapat diimplementasikan dengan tabel <span className="font-mono">admin_users</span> di Supabase.
+        </div>
+      </section>
+    </div>
+  )
+}
+
+// ─── Article Manager (dipindah dari Dashboard langsung) ───────────────────────
+function ArticleManager({ articles, loading, fetchArticles }) {
   const [form, setForm]           = useState(EMPTY_FORM)
-  const [editId, setEditId]       = useState(null)   // null = mode create
+  const [editId, setEditId]       = useState(null)
   const [formOpen, setFormOpen]   = useState(false)
   const [deleteId, setDeleteId]   = useState(null)
-  const [toast, setToast]         = useState(null)   // { type: 'success'|'error', msg }
+  const [toast, setToast]         = useState(null)
   const [saving, setSaving]       = useState(false)
   const [uploadingImage, setUploadingImage] = useState(false)
 
@@ -306,21 +832,6 @@ function Dashboard({ session }) {
       formOpenRef.current = false
     }
   }, [formOpen, editor]) // eslint-disable-line react-hooks/exhaustive-deps
-
-  // ── Fetch ──────────────────────────────────────────────────────────────────
-  const fetchArticles = useCallback(async () => {
-    setLoading(true)
-    const { data, error } = await supabase
-      .from('articles')
-      .select('id, title, content, category, image_url, created_at')
-      .order('created_at', { ascending: false })
-
-    if (error) showToast('error', error.message)
-    else setArticles(data)
-    setLoading(false)
-  }, [])
-
-  useEffect(() => { fetchArticles() }, [fetchArticles])
 
   // ── Toast helper ───────────────────────────────────────────────────────────
   function showToast(type, msg) {
@@ -446,13 +957,8 @@ function Dashboard({ session }) {
       return showToast('error', 'Artikel gagal dihapus. Kemungkinan policy database (RLS) menolak delete.')
     }
 
-    setArticles(current => current.filter(article => article.id !== currentDeleteId))
     showToast('success', 'Artikel berhasil dihapus.')
-  }
-
-  // ── Logout ─────────────────────────────────────────────────────────────────
-  async function handleLogout() {
-    await supabase.auth.signOut()
+    fetchArticles()
   }
 
   // ── Category badge color ───────────────────────────────────────────────────
@@ -464,29 +970,11 @@ function Dashboard({ session }) {
   }
 
   return (
-    <div className="min-h-screen bg-gray-950 text-gray-100">
-
-      {/* ── Topbar ── */}
-      <header className="sticky top-0 z-30 bg-gray-900/80 backdrop-blur border-b border-gray-800 px-6 py-3 flex items-center justify-between">
-        <div className="flex items-center gap-2.5">
-          <div className="w-7 h-7 rounded-md bg-indigo-600 flex items-center justify-center text-white font-bold text-xs">S</div>
-          <span className="font-semibold text-sm">SEPTA CMS</span>
-          <span className="hidden sm:block text-gray-600 text-xs ml-2">{session.user.email}</span>
-        </div>
-        <button
-          onClick={handleLogout}
-          className="text-xs text-gray-400 hover:text-white border border-gray-700 hover:border-gray-500 rounded-lg px-3 py-1.5 transition"
-        >
-          Keluar
-        </button>
-      </header>
-
-      <main className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
-
+    <div>
         {/* ── Page title + CTA ── */}
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h1 className="text-xl font-bold">Manajemen Artikel</h1>
+            <h1 className="text-xl font-bold">Editor Artikel</h1>
             <p className="text-gray-400 text-sm mt-0.5">{articles.length} artikel tersimpan</p>
           </div>
           <button
@@ -561,7 +1049,6 @@ function Dashboard({ session }) {
             </div>
           )}
         </div>
-      </main>
 
       {/* ── Modal Form (Create / Edit) ── */}
       {formOpen && (
@@ -716,3 +1203,4 @@ function Dashboard({ session }) {
     </div>
   )
 }
+
