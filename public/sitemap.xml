@@ -66,21 +66,3 @@
   </url>
 
 </urlset>
-
-  <!-- Halaman Simulasi Sistem Antrian -->
-  <url>
-    <loc>https://bisnistech.vercel.app/simulasi/</loc>
-    <lastmod>2026-05-03</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-
-  <!-- Halaman Edukasi & Blog -->
-  <url>
-    <loc>https://bisnistech.vercel.app/edukasi</loc>
-    <lastmod>2026-05-03</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-
-</urlset>
